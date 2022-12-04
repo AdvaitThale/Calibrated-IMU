@@ -1,3 +1,20 @@
+/*
+  Author: Advait Thale
+
+  *******************************************************************
+  *                        MPU6050 Read All                         *    
+  *******************************************************************
+
+  Ths is a test code for reading all values of IMUs sensors. Here, as IMU
+  MPU6050 is used which is 6 axis Accelerometer, Gyroscope and Temprature sensor.
+  Refer Register Map and datasheet for furthur details on MPU6050 IMU.
+  
+  Pinout of IMU MPU6050:
+  ---------------------------------
+  |VCC|GND|SCL|SDA|XDA|XCL|AD0|INT| 
+  ---------------------------------
+*/
+
 #include <Wire.h> //library allows communication with I2C / TWI devices
 #include <math.h> //library includes mathematical functions
 
