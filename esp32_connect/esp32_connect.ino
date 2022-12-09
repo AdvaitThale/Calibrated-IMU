@@ -20,6 +20,8 @@
 
 #include <WiFi.h>
 #include <WebServer.h>
+#include <Wire.h>     // Library for I2C comm
+#include <math.h>     // To include math functions
 
 /* SSID & Password*/
 const char* ssid = "Cunt";          // Enter SSID
