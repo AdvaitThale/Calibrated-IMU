@@ -136,32 +136,37 @@ String SendHTML(uint8_t imu1stat, uint8_t imu2stat) {
   ptr += "p {font-size: 20px;color: #888;margin-bottom: 10px;}\n";
   ptr += "#box {border-radius: 20px;background: #d9d9d9;padding: 20px;width: 120px;height: 60px;}";
   ptr += "footer {text-align: left;text-decoration: none;position: fixed;left: 0;bottom: 0;width: 100%;height: 5%;padding: 3px;background-color: blanchedalmond;color: black;}\n";
+  ptr += ".column {float: left; width: 33.33 %; padding: 15px;}\n";
+  ptr += ".row: after {content: ""; display: table; clear: both;}\n";
   ptr += "</style>\n";
   ptr += "</head>\n";
+
   ptr += "<body>\n";
   ptr += "<h1>APOLLO COMMS</h1>\n";
   ptr += "<h3>DASHBOARD</h3>\n";
-
+  ptr += "<div class = \"row\">\n";
   if (imu1stat)
   {
-    ptr += "<p>IMU-1:<div style=\"color:#009933\"> ONLINE</div></p><a class=\"button button-off\" href=\"/imu1off\">OFF</a>\n";
+    ptr += "<div class=\"column\"> <p>IMU-1:<div style=\"color:#009933\"> ONLINE</div></p><a class=\"button button-off\" href=\"/imu1off\">OFF</a></div>\n";
   }
   else
   {
-    ptr += "<p>IMU-1:<div style=\"color:#e60000\"> OFFLINE</div></p><a class=\"button button-on\" href=\"/imu1on\">ON</a>\n";
+    ptr += "<div class=\"column\"> <p>IMU-1:<div style=\"color:#e60000\"> OFFLINE</div></p><a class=\"button button-on\" href=\"/imu1on\">ON</a></div>\n";
   }
 
   if (imu2stat)
   {
-    ptr += "<p>IMU-2:<div style=\"color:#009933\"> ONLINE</div></p><a class=\"button button-off\" href=\"/imu2off\">OFF</a>\n";
+    ptr += "<div class=\"column\"> <p>IMU-2:<div style=\"color:#009933\"> ONLINE</div></p><a class=\"button button-off\" href=\"/imu2off\">OFF</a></div>\n";
   }
   else
   {
-    ptr += "<p>IMU-2: <div style=\"color:#e60000\"> OFFLINE</div></p><a class=\"button button-on\" href=\"/imu2on\">ON</a>\n";
+    ptr += "<div class=\"column\"> <p>IMU-2: <div style=\"color:#e60000\"> OFFLINE</div></p><a class=\"button button-on\" href=\"/imu2on\">ON</a></div>\n";
   }
-
-  ptr += "<p id=\"box\">Yaw: </br>Pitch: </br>Roll: </p>";
-  ptr += "<footer>Author: Advaait Thale</footer>";
+  
+  ptr += "<div class=\"column\"> <p id=\"box\">Yaw: </br>Pitch: </br>Roll: </p></div>";
+  ptr += "<div class=\"column\"> <p id=\"box\">Yaw: </br>Pitch: </br>Roll: </p></div>";
+  ptr += "</div>";
+  ptr += "<footer>Author: Advait Thale</footer>";
   ptr += "</body>\n";
   ptr += "</html>\n";
   return ptr;
