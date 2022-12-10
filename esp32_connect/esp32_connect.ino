@@ -40,6 +40,8 @@ bool IMU1status = LOW;
 uint8_t IMU2pin = 19;
 bool IMU2status = LOW;
 
+const int MPU=0x68; //I2C address of the MPU-6050
+
 void setup() {
   pinMode(IMU1pin, OUTPUT);
   pinMode(IMU2pin, OUTPUT);
@@ -131,11 +133,11 @@ String SendHTML(uint8_t imu1stat, uint8_t imu2stat) {
   ptr += ".button {display: block;width: 80px;background-color: #3498db;border: none;color: white;padding: 13px 30px;text-decoration: none;font-size: 25px;margin: 0px auto 35px;cursor: pointer;border-radius: 4px;}\n";
   ptr += ".button-on {background-color: #009933;}\n";
   ptr += ".button-on:active {background-color: #2980b9;}\n";
-  ptr += ".button-off {background-color: #34495e;}\n";
-  ptr += ".button-off:active {background-color: #2c3e50;}\n";
+  ptr += ".button-off {background-color: #ff0000;}\n";
+  ptr += ".button-off:active {background-color: #34495e;}\n";
   ptr += "p {font-size: 20px;color: #888;margin-bottom: 10px;}\n";
   ptr += "#box {border-radius: 20px;background: #d9d9d9;padding: 20px;width: 120px;height: 60px;}";
-  ptr += "footer {text-align: left;text-decoration: none;position: fixed;left: 0;bottom: 0;width: 100%;height: 5%;padding: 3px;background-color: blanchedalmond;color: black;}\n";
+  ptr += "footer {text-align: left;text-decoration: none;position: fixed;left: 0;bottom: 0;width: 100%;height: 3%;padding: 2px;background-color: blanchedalmond;color: #e60000;}\n";
   ptr += ".column {float: left; width: 33.33 %; padding: 15px;}\n";
   ptr += ".row: after {content: ""; display: table; clear: both;}\n";
   ptr += "</style>\n";
@@ -147,24 +149,21 @@ String SendHTML(uint8_t imu1stat, uint8_t imu2stat) {
   ptr += "<div class = \"row\">\n";
   if (imu1stat)
   {
-    ptr += "<div class=\"column\"> <p>IMU-1:<div style=\"color:#009933\"> ONLINE</div></p><a class=\"button button-off\" href=\"/imu1off\">OFF</a></div>\n";
+    ptr += "<div class=\"column\"> <nobr><p>IMU-1:<div style=\"color:#009933\"> ONLINE</div></p><a class=\"button button-off\" href=\"/imu1off\">OFF</a></nobr><p id=\"box\">Yaw: </br>Pitch: </br>Roll: </p> </div>\n";
   }
   else
   {
-    ptr += "<div class=\"column\"> <p>IMU-1:<div style=\"color:#e60000\"> OFFLINE</div></p><a class=\"button button-on\" href=\"/imu1on\">ON</a></div>\n";
+    ptr += "<div class=\"column\"> <nobr><p>IMU-1:<div style=\"color:#e60000\"> OFFLINE</div></p><a class=\"button button-on\" href=\"/imu1on\">ON</a></nobr><p id=\"box\">Yaw: </br>Pitch: </br>Roll: </p> </div>\n";
   }
-
   if (imu2stat)
   {
-    ptr += "<div class=\"column\"> <p>IMU-2:<div style=\"color:#009933\"> ONLINE</div></p><a class=\"button button-off\" href=\"/imu2off\">OFF</a></div>\n";
+    ptr += "<div class=\"column\"> <nobr><p>IMU-2:<div style=\"color:#009933\"> ONLINE</div></p><a class=\"button button-off\" href=\"/imu2off\">OFF</a></nobr><p id=\"box\">Yaw: </br>Pitch: </br>Roll: </p></div>\n";
   }
   else
   {
-    ptr += "<div class=\"column\"> <p>IMU-2: <div style=\"color:#e60000\"> OFFLINE</div></p><a class=\"button button-on\" href=\"/imu2on\">ON</a></div>\n";
+    ptr += "<div class=\"column\"> <nobr><p>IMU-2: <div style=\"color:#e60000\"> OFFLINE</div></p><a class=\"button button-on\" href=\"/imu2on\">ON</a></nobr><p id=\"box\">Yaw: </br>Pitch: </br>Roll: </p></div>\n";
   }
-  
-  ptr += "<div class=\"column\"> <p id=\"box\">Yaw: </br>Pitch: </br>Roll: </p></div>";
-  ptr += "<div class=\"column\"> <p id=\"box\">Yaw: </br>Pitch: </br>Roll: </p></div>";
+  ptr += "";
   ptr += "</div>";
   ptr += "<footer>Author: Advait Thale</footer>";
   ptr += "</body>\n";
