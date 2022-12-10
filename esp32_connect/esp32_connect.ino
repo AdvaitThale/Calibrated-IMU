@@ -2,7 +2,7 @@
   Author: Advait Thale
 
   *******************************************************************
-  *                      IMU - ESP32 Connect                        *
+                         IMU - ESP32 Connect
   *******************************************************************
 
   Ths is a test code for reading all values of IMUs sensors. Here, as IMU
@@ -41,9 +41,14 @@ uint8_t IMU2pin = 19;
 bool IMU2status = LOW;
 
 void setup() {
-  Serial.begin(115200);
   pinMode(IMU1pin, OUTPUT);
   pinMode(IMU2pin, OUTPUT);
+  Wire.begin();                 //initiate wire library and I2C
+  Wire.beginTransmission(MPU);  //begin transmission to I2C slave device
+  Wire.write(0x6B);             // PWR_MGMT_1 register
+  Wire.write(0);                // set to zero (wakes up the MPU-6050)
+  Wire.endTransmission(true);   //ends transmission to I2C slave device
+  Serial.begin(115200);
 
   WiFi.softAP(ssid, password);
   WiFi.softAPConfig(local_ip, gateway, subnet);
@@ -129,6 +134,8 @@ String SendHTML(uint8_t imu1stat, uint8_t imu2stat) {
   ptr += ".button-off {background-color: #34495e;}\n";
   ptr += ".button-off:active {background-color: #2c3e50;}\n";
   ptr += "p {font-size: 20px;color: #888;margin-bottom: 10px;}\n";
+  ptr += "#box {border-radius: 20px;background: #d9d9d9;padding: 20px;width: 120px;height: 60px;}";
+  ptr += "footer {text-align: left;text-decoration: none;position: fixed;left: 0;bottom: 0;width: 100%;height: 5%;padding: 3px;background-color: blanchedalmond;color: black;}\n";
   ptr += "</style>\n";
   ptr += "</head>\n";
   ptr += "<body>\n";
@@ -137,22 +144,24 @@ String SendHTML(uint8_t imu1stat, uint8_t imu2stat) {
 
   if (imu1stat)
   {
-    ptr += "<p>IMU 1: ONLINE</p><a class=\"button button-off\" href=\"/imu1off\">OFF</a>\n";
+    ptr += "<p>IMU-1:<div style=\"color:#009933\"> ONLINE</div></p><a class=\"button button-off\" href=\"/imu1off\">OFF</a>\n";
   }
   else
   {
-    ptr += "<p>IMU 1: OFFLINE</p><a class=\"button button-on\" href=\"/imu1on\">ON</a>\n";
+    ptr += "<p>IMU-1:<div style=\"color:#e60000\"> OFFLINE</div></p><a class=\"button button-on\" href=\"/imu1on\">ON</a>\n";
   }
 
   if (imu2stat)
   {
-    ptr += "<p>IMU 2: ONLINE</p><a class=\"button button-off\" href=\"/imu2off\">OFF</a>\n";
+    ptr += "<p>IMU-2:<div style=\"color:#009933\"> ONLINE</div></p><a class=\"button button-off\" href=\"/imu2off\">OFF</a>\n";
   }
   else
   {
-    ptr += "<p>IMU 2: OFFLINE</p><a class=\"button button-on\" href=\"/imu2on\">ON</a>\n";
+    ptr += "<p>IMU-2: <div style=\"color:#e60000\"> OFFLINE</div></p><a class=\"button button-on\" href=\"/imu2on\">ON</a>\n";
   }
 
+  ptr += "<p id=\"box\">Yaw: </br>Pitch: </br>Roll: </p>";
+  ptr += "<footer>Author: Advaait Thale</footer>";
   ptr += "</body>\n";
   ptr += "</html>\n";
   return ptr;
