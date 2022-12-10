@@ -137,7 +137,7 @@ String SendHTML(uint8_t imu1stat, uint8_t imu2stat) {
   ptr += ".button-off:active {background-color: #34495e;}\n";
   ptr += "p {font-size: 20px;color: #888;margin-bottom: 10px;}\n";
   ptr += "#box {border-radius: 20px;background: #d9d9d9;padding: 20px;width: 120px;height: 60px;}";
-  ptr += "footer {text-align: left;text-decoration: none;position: fixed;left: 0;bottom: 0;width: 100%;height: 3%;padding: 2px;background-color: blanchedalmond;color: #e60000;}\n";
+  ptr += "footer {text-align: center;text-decoration: none;position: fixed;left: 0;bottom: 0;width: 100%;height: 3%;padding: 2px;background-color: #00004d;color: #f2f2f2;}\n";
   ptr += ".column {float: left; width: 33.33 %; padding: 15px;}\n";
   ptr += ".row: after {content: ""; display: table; clear: both;}\n";
   ptr += "</style>\n";
@@ -146,7 +146,15 @@ String SendHTML(uint8_t imu1stat, uint8_t imu2stat) {
   ptr += "<body>\n";
   ptr += "<h1>APOLLO COMMS</h1>\n";
   ptr += "<h3>DASHBOARD</h3>\n";
-  ptr += "<div class = \"row\">\n";
+  
+  if(t > 50){
+  ptr += "<p>TEMP. OVERLOAD<svg width="170" height="15"><rect x="15" y="5" rx="7" ry="7" width="20" height="10" style="fill:#ff8800"/></svg> </p>";
+  }
+  else(t<=50) {
+  ptr += "<p>TEMP. OVERLOAD<svg width="170" height="15"><rect x="15" y="5" rx="7" ry="7" width="20" height="10" style="fill:#009933"/></svg> </p>";
+  }
+  
+  ptr += "<div class=\"row\">\n";
   if (imu1stat)
   {
     ptr += "<div class=\"column\"> <nobr><p>IMU-1:<div style=\"color:#009933\"> ONLINE</div></p><a class=\"button button-off\" href=\"/imu1off\">OFF</a></nobr><p id=\"box\">Yaw: </br>Pitch: </br>Roll: </p> </div>\n";
@@ -163,9 +171,8 @@ String SendHTML(uint8_t imu1stat, uint8_t imu2stat) {
   {
     ptr += "<div class=\"column\"> <nobr><p>IMU-2: <div style=\"color:#e60000\"> OFFLINE</div></p><a class=\"button button-on\" href=\"/imu2on\">ON</a></nobr><p id=\"box\">Yaw: </br>Pitch: </br>Roll: </p></div>\n";
   }
-  ptr += "";
   ptr += "</div>";
-  ptr += "<footer>Author: Advait Thale</footer>";
+  ptr += "<footer>INERTIAL MEASUREMENT UNIT CONTROL DASHBOARD Author: Advait Thale</footer>";
   ptr += "</body>\n";
   ptr += "</html>\n";
   return ptr;
