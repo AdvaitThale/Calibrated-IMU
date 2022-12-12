@@ -40,7 +40,10 @@ bool IMU1status = LOW;
 uint8_t IMU2pin = 19;
 bool IMU2status = LOW;
 
-const int MPU=0x68; //I2C address of the MPU-6050
+const int MPU=0x68;                                 //I2C address of the MPU-6050
+int16_t AcX,AcY,AcZ,Tmp,GyX,GyY,GyZ;                //16-bit integers
+int AcXcal,AcYcal,AcZcal,GyXcal,GyYcal,GyZcal,tcal; //calibration variables
+double t,tx,tf,pitch,roll;
 
 void setup() {
   pinMode(IMU1pin, OUTPUT);
