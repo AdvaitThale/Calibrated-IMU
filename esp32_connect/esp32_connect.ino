@@ -106,6 +106,24 @@ void loop() {
   t = tx / 340 + 36.53; //equation for temperature in degrees C from datasheet
   tf = (t * 9 / 5) + 32; //fahrenheit
 
+   //printing values to serial port
+   // Serial.print("Angle: ");
+    Serial.print("Pitch = "); Serial.print(pitch);
+    Serial.print(" Roll = "); Serial.println(roll);
+  
+    Serial.print("Accelerometer: ");
+    Serial.print("X = "); Serial.print(AcX + AcXcal);
+    Serial.print(" Y = "); Serial.print(AcY + AcYcal);
+    Serial.print(" Z = "); Serial.println(AcZ + AcZcal); 
+
+    /*Serial.print("Temperature in celsius = "); Serial.print(t);  
+    Serial.print(" fahrenheit = "); Serial.println(tf);  */
+  
+    Serial.print("Gyroscope: ");
+    Serial.print("X = "); Serial.print(GyX + GyXcal);
+    Serial.print(" Y = "); Serial.print(GyY + GyYcal);
+    Serial.print(" Z = "); Serial.println(GyZ + GyZcal);
+
   server.handleClient();
   if (IMU1status)
   {
