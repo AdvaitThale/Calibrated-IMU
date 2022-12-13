@@ -75,7 +75,7 @@ void loop() {
   Wire.endTransmission(false); //restarts transmission to I2C slave device
   Wire.requestFrom(MPU, 14, true); //request 14 registers in total
 
- //Acceleration data correction
+  //Acceleration data correction
   AcXcal = -950;
   AcYcal = -300;
   AcZcal = 0;
@@ -87,7 +87,7 @@ void loop() {
   GyXcal = 480;
   GyYcal = 170;
   GyZcal = 210;
-  
+
   //read accelerometer data
   AcX = Wire.read() << 8 | Wire.read(); // 0x3B (ACCEL_XOUT_H) 0x3C (ACCEL_XOUT_L)
   AcY = Wire.read() << 8 | Wire.read(); // 0x3D (ACCEL_YOUT_H) 0x3E (ACCEL_YOUT_L)
@@ -106,23 +106,34 @@ void loop() {
   t = tx / 340 + 36.53; //equation for temperature in degrees C from datasheet
   tf = (t * 9 / 5) + 32; //fahrenheit
 
-   //printing values to serial port
-   // Serial.print("Angle: ");
-    Serial.print("Pitch = "); Serial.print(pitch);
-    Serial.print(" Roll = "); Serial.println(roll);
-  
-    Serial.print("Accelerometer: ");
-    Serial.print("X = "); Serial.print(AcX + AcXcal);
-    Serial.print(" Y = "); Serial.print(AcY + AcYcal);
-    Serial.print(" Z = "); Serial.println(AcZ + AcZcal); 
+  double x = Ax;
+  double y = Ay;
+  double z = Az;
 
-    /*Serial.print("Temperature in celsius = "); Serial.print(t);  
+  pitch = atan(x / sqrt((y * y) + (z * z))); //pitch calculation
+  roll = atan(y / sqrt((x * x) + (z * z))); //roll calculation
+
+  //converting radians into degrees
+  pitch = pitch * (180.0 / 3.14);
+  roll = roll * (180.0 / 3.14) ;
+
+  //printing values to serial port
+  // Serial.print("Angle: ");
+  Serial.print("Pitch = "); Serial.print(pitch);
+  Serial.print(" Roll = "); Serial.println(roll);
+
+  Serial.print("Accelerometer: ");
+  Serial.print("X = "); Serial.print(AcX + AcXcal);
+  Serial.print(" Y = "); Serial.print(AcY + AcYcal);
+  Serial.print(" Z = "); Serial.println(AcZ + AcZcal);
+
+  /*Serial.print("Temperature in celsius = "); Serial.print(t);
     Serial.print(" fahrenheit = "); Serial.println(tf);  */
-  
-    Serial.print("Gyroscope: ");
-    Serial.print("X = "); Serial.print(GyX + GyXcal);
-    Serial.print(" Y = "); Serial.print(GyY + GyYcal);
-    Serial.print(" Z = "); Serial.println(GyZ + GyZcal);
+
+  Serial.print("Gyroscope: ");
+  Serial.print("X = "); Serial.print(GyX + GyXcal);
+  Serial.print(" Y = "); Serial.print(GyY + GyYcal);
+  Serial.print(" Z = "); Serial.println(GyZ + GyZcal);
 
   server.handleClient();
   if (IMU1status)
