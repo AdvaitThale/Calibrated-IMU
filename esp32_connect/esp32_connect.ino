@@ -40,10 +40,10 @@ bool IMU1status = LOW;
 uint8_t IMU2pin = 19;
 bool IMU2status = LOW;
 
-const int MPU=0x68;                                 //I2C address of the MPU-6050
-int16_t AcX,AcY,AcZ,Tmp,GyX,GyY,GyZ;                //16-bit integers
-int AcXcal,AcYcal,AcZcal,GyXcal,GyYcal,GyZcal,tcal; //calibration variables
-double t,tx,tf,pitch,roll;
+const int MPU = 0x68;                               //I2C address of the MPU-6050
+int16_t AcX, AcY, AcZ, Tmp, GyX, GyY, GyZ;          //16-bit integers
+int AcXcal, AcYcal, AcZcal, GyXcal, GyYcal, GyZcal, tcal; //calibration variables
+double t, tx, tf, pitch, roll;
 
 void setup() {
   pinMode(IMU1pin, OUTPUT);
@@ -70,6 +70,30 @@ void setup() {
   Serial.println("HTTP server started");
 }
 void loop() {
+  Wire.beginTransmission(MPU); //begin transmission to I2C slave device
+  Wire.write(0x3B); // starting with register 0x3B (ACCEL_XOUT_H)
+  Wire.endTransmission(false); //restarts transmission to I2C slave device
+  Wire.requestFrom(MPU, 14, true); //request 14 registers in total
+
+ 
+  //read accelerometer data
+  AcX = Wire.read() << 8 | Wire.read(); // 0x3B (ACCEL_XOUT_H) 0x3C (ACCEL_XOUT_L)
+  AcY = Wire.read() << 8 | Wire.read(); // 0x3D (ACCEL_YOUT_H) 0x3E (ACCEL_YOUT_L)
+  AcZ = Wire.read() << 8 | Wire.read(); // 0x3F (ACCEL_ZOUT_H) 0x40 (ACCEL_ZOUT_L)
+
+  //read temperature data
+  Tmp = Wire.read() << 8 | Wire.read(); // 0x41 (TEMP_OUT_H) 0x42 (TEMP_OUT_L)
+
+  //read gyroscope data
+  GyX = Wire.read() << 8 | Wire.read(); // 0x43 (GYRO_XOUT_H) 0x44 (GYRO_XOUT_L)
+  GyY = Wire.read() << 8 | Wire.read(); // 0x45 (GYRO_YOUT_H) 0x46 (GYRO_YOUT_L)
+  GyZ = Wire.read() << 8 | Wire.read(); // 0x47 (GYRO_ZOUT_H) 0x48 (GYRO_ZOUT_L)
+
+  //temperature calculation
+  tx = Tmp + tcal;
+  t = tx / 340 + 36.53; //equation for temperature in degrees C from datasheet
+  tf = (t * 9 / 5) + 32; //fahrenheit
+
   server.handleClient();
   if (IMU1status)
   {
@@ -149,14 +173,14 @@ String SendHTML(uint8_t imu1stat, uint8_t imu2stat) {
   ptr += "<body>\n";
   ptr += "<h1>APOLLO COMMS</h1>\n";
   ptr += "<h3>DASHBOARD</h3>\n";
-  
-  if(t > 50){
-  ptr += "<p>TEMP. OVERLOAD<svg width="170" height="15"><rect x="15" y="5" rx="7" ry="7" width="20" height="10" style="fill:#ff8800"/></svg> </p>";
+
+  if (t > 50) {
+ptr += "<p>TEMP. OVERLOAD<svg width="170" height="15"><rect x="15" y="5" rx="7" ry="7" width="20" height="10" style="fill: #ff8800"/></svg> </p>";
   }
-  else(t<=50) {
-  ptr += "<p>TEMP. OVERLOAD<svg width="170" height="15"><rect x="15" y="5" rx="7" ry="7" width="20" height="10" style="fill:#009933"/></svg> </p>";
+  else(t <= 50) {
+ptr += "<p>TEMP. OVERLOAD<svg width="170" height="15"><rect x="15" y="5" rx="7" ry="7" width="20" height="10" style="fill: #009933"/></svg> </p>";
   }
-  
+
   ptr += "<div class=\"row\">\n";
   if (imu1stat)
   {
