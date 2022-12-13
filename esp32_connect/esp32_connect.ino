@@ -75,7 +75,19 @@ void loop() {
   Wire.endTransmission(false); //restarts transmission to I2C slave device
   Wire.requestFrom(MPU, 14, true); //request 14 registers in total
 
- 
+ //Acceleration data correction
+  AcXcal = -950;
+  AcYcal = -300;
+  AcZcal = 0;
+
+  //Temperature correction
+  tcal = -1600;
+
+  //Gyro correction
+  GyXcal = 480;
+  GyYcal = 170;
+  GyZcal = 210;
+  
   //read accelerometer data
   AcX = Wire.read() << 8 | Wire.read(); // 0x3B (ACCEL_XOUT_H) 0x3C (ACCEL_XOUT_L)
   AcY = Wire.read() << 8 | Wire.read(); // 0x3D (ACCEL_YOUT_H) 0x3E (ACCEL_YOUT_L)
