@@ -111,53 +111,57 @@ void loop() {
   GyX = Wire.read() << 8 | Wire.read(); // 0x43 (GYRO_XOUT_H) 0x44 (GYRO_XOUT_L)
   GyY = Wire.read() << 8 | Wire.read(); // 0x45 (GYRO_YOUT_H) 0x46 (GYRO_YOUT_L)
   GyZ = Wire.read() << 8 | Wire.read(); // 0x47 (GYRO_ZOUT_H) 0x48 (GYRO_ZOUT_L)
-  
+
   tx = Tmp + tcal;         // Temperature Calculation
   t = tx / 340 + 36.53;    // Temperature in degrees C (from datasheet)
   //tf = (t * 9 / 5) + 32; // Celsius to Fahrenheit
 
-//  //conversion of accelerometer values into pitch and roll
-//  pitch = atan(AcX / sqrt((AcY * AcY) + (AcZ * AcZ))); //pitch calculation
-//  roll = atan(AcX / sqrt((AcX * AcX) + (AcZ * AcZ)));  //roll calculation
-//
-//  //converting radians into degrees
-//  pitch = pitch * (180.0 / 3.14);
-//  roll = roll * (180.0 / 3.14) ;
-//
-//  Serial.print("Pitch = "); Serial.print(pitch);
-//  Serial.print(" Roll = "); Serial.println(roll);
+  //  //conversion of accelerometer values into pitch and roll
+  //  pitch = atan(AcX / sqrt((AcY * AcY) + (AcZ * AcZ))); //pitch calculation
+  //  roll = atan(AcX / sqrt((AcX * AcX) + (AcZ * AcZ)));  //roll calculation
+  //
+  //  //converting radians into degrees
+  //  pitch = pitch * (180.0 / 3.14);
+  //  roll = roll * (180.0 / 3.14) ;
+  //
+  //  Serial.print("Pitch = "); Serial.print(pitch);
+  //  Serial.print(" Roll = "); Serial.println(roll);
 
   Serial.print("MAXX "); Serial.print(AcX + AcXcal);
   Serial.print(" MAXY "); Serial.print(AcY + AcYcal);
   Serial.print(" MAXZ "); Serial.print(AcZ + AcZcal);
-  
+
   Serial.print(" MAXT: "); Serial.println(t);
   //Serial.print(" fahrenheit = "); Serial.println(tf);
 
-//  Serial.print("Gyroscope: ");
-//  Serial.print("X = "); Serial.print(GyX + GyXcal);
-//  Serial.print(" Y = "); Serial.print(GyY + GyYcal);
-//  Serial.print(" Z = "); Serial.println(GyZ + GyZcal);
+  //  Serial.print("Gyroscope: ");
+  //  Serial.print("X = "); Serial.print(GyX + GyXcal);
+  //  Serial.print(" Y = "); Serial.print(GyY + GyYcal);
+  //  Serial.print(" Z = "); Serial.println(GyZ + GyZcal);
 
-  // Print on OLED 
+  // Print on OLED
   display.setTextSize(1);
   display.setTextColor(SH110X_WHITE);
-  display.setCursor(80, 10);
-  display.print("MAXT ");
-  display.setCursor(100, 10);
-  display.print(t);
-  display.setCursor(0, 25);
+  display.setCursor(0, 0);
+  display.print("  MOTOR VIBRATIONS ");
+  display.setCursor(0, 15);
   display.print("MAXX ");
-  display.setCursor(32, 25);
+  display.setCursor(30, 15);
   display.print(AcX + AcXcal);
-  display.setCursor(0, 40);
+  display.setCursor(0, 25);
   display.print("MAXY ");
-  display.setCursor(40, 40);
+  display.setCursor(30, 25);
   display.print(AcY + AcYcal);
-  display.setCursor(0, 55);
+  display.setCursor(0, 35);
   display.print("MAXZ ");
-  display.setCursor(30, 55);
+  display.setCursor(30, 35);
   display.print(AcZ + AcZcal);
+  display.setCursor(0, 45);
+  display.print("MAXT ");
+  display.setCursor(30, 45);
+  display.print(t);
+  display.display();
+  display.clearDisplay();
 
   server.handleClient();
   if (IMU1status)
@@ -238,30 +242,32 @@ String SendHTML(uint8_t imu1stat, uint8_t imu2stat) {
   ptr += "<body>\n";
   ptr += "<h1>IMU COMM.</h1>\n";
   ptr += "<h3>DASHBOARD</h3>\n";
-
-  if (t > 50) {
-ptr += "<p>TEMP. OVERLOAD<svg width="170" height="15"><rect x="15" y="5" rx="7" ry="7" width="20" height="10" style="fill: #ff8800"/></svg> </p>";
+  client.println();
+  if (t > 20)
+  {
+    ptr += "<p>TEMP. OVERLOAD<svg width=\"170\" height=\"15\"><rect x=\"15\" y=\"5\" rx=\"7\" ry=\"7\" width=\"20\" height=\"10\" style=\"fill: #ff8800\"/></svg> </p>";
   }
-  else(t <= 50) {
-ptr += "<p>TEMP. OVERLOAD<svg width="170" height="15"><rect x="15" y="5" rx="7" ry="7" width="20" height="10" style="fill: #009933"/></svg> </p>";
+  else{
+    ptr += "<p>TEMP. OVERLOAD<svg width=\"170\" height=\"15\"><rect x=\"15\" y=\"5\" rx=\"7\" ry=\"7\" width=\"20\" height=\"10\" style=\"fill: #009933\"/></svg> </p>";
   }
 
   ptr += "<div class=\"row\">\n";
   if (imu1stat)
   {
-    ptr += "<div class=\"column\"> <nobr><p>IMU-1:<div style=\"color:#009933\"> ONLINE</div></p><a class=\"button button-off\" href=\"/imu1off\">OFF</a></nobr><p id=\"box\">Yaw: </br>Pitch: </br>Roll: </p> </div>\n";
+    ptr += "<div class=\"column\"> <nobr><p>IMU-1:<div style=\"color:#009933\"> ONLINE</div></p><a class=\"button button-off\" href=\"/imu1off\">OFF</a></nobr><p id=\"box\">MAXX: </br>MAXY: </br>MAXZ: </p> </div>\n";
   }
   else
   {
-    ptr += "<div class=\"column\"> <nobr><p>IMU-1:<div style=\"color:#e60000\"> OFFLINE</div></p><a class=\"button button-on\" href=\"/imu1on\">ON</a></nobr><p id=\"box\">Yaw: </br>Pitch: </br>Roll: </p> </div>\n";
+    ptr += "<div class=\"column\"> <nobr><p>IMU-1:<div style=\"color:#e60000\"> OFFLINE</div></p><a class=\"button button-on\" href=\"/imu1on\">ON</a></nobr><p id=\"box\">MAXX: 0</br>MAXY: 0</br>MAXZ: 0</p> </div>\n";
   }
   if (imu2stat)
   {
-    ptr += "<div class=\"column\"> <nobr><p>IMU-2:<div style=\"color:#009933\"> ONLINE</div></p><a class=\"button button-off\" href=\"/imu2off\">OFF</a></nobr><p id=\"box\">Yaw: </br>Pitch: </br>Roll: </p></div>\n";
+    ptr += "<div class=\"column\"> <nobr><p>IMU-2:<div style=\"color:#009933\"> ONLINE</div></p><a class=\"button button-off\" href=\"/imu2off\">OFF</a></nobr><p id=\"box\">MAXX: </br>MAXY: </br>MAXZ: </p></div>\n";
   }
   else
   {
-    ptr += "<div class=\"column\"> <nobr><p>IMU-2: <div style=\"color:#e60000\"> OFFLINE</div></p><a class=\"button button-on\" href=\"/imu2on\">ON</a></nobr><p id=\"box\">Yaw: </br>Pitch: </br>Roll: </p></div>\n";
+    ptr += "<div class=\"column\"> <nobr><p>IMU-2:<div style=\"color:#e60000\"> OFFLINE</div></p><a class=\"button button-on\" href=\"/imu2on\">ON</a></nobr><p id=\"box\">MAXX: 0</br>MAXY: 0</br>MAXZ: 0</p></div>\n";
+ 
   }
   ptr += "</div>";
   ptr += "<footer>INERTIAL MEASUREMENT UNIT CONTROL DASHBOARD Author: Advait Thale</footer>";
@@ -277,53 +283,53 @@ ptr += "<p>TEMP. OVERLOAD<svg width="170" height="15"><rect x="15" y="5" rx="7" 
 // float previousTime, currentTime, elapsedTime;
 // float gyroAngX, gyroAngY, gyroAngZ;
 //
-// 
+//
 // void setup()
 // {
-//  Wire.begin();                      
-//  Wire.beginTransmission(MPU);      
-//  Wire.write(0x6B);                  
-//  Wire.write(0);                  
+//  Wire.begin();
+//  Wire.beginTransmission(MPU);
+//  Wire.write(0x6B);
+//  Wire.write(0);
 //  Wire.endTransmission(true);
 //  Serial.begin(115200);
 // }
-// 
+//
 // void loop()
 // {
 // previousTime = currentTime;        //Previous time is stored before the actual time read
-// currentTime = millis();            //Current time 
+// currentTime = millis();            //Current time
 // elapsedTime = (currentTime-previousTime)/1000; //finding elapsed time and dividing by 1000 to get in seconds
-//  
+//
 // Wire.beginTransmission(MPU);
 // Wire.write(0x43); //Gyro Measurement Register
 // Wire.endTransmission(false);
 // Wire.requestFrom(MPU, 6, true); //6+6+2 registers
-// 
+//
 // GyroX = (Wire.read()<<8|Wire.read()) / 131.0; // For 250deg/s range divide raw value by 131.0
 // GyroY = (Wire.read()<<8|Wire.read()) / 131.0;
 // GyroZ = (Wire.read()<<8|Wire.read()) / 131.0;
-//  
-//  
+//
+//
 //  gyroAngX = gyroAngX + GyroX * elapsedTime; //Converting into degrees (deg=deg/s*s)
 //  gyroAngY = gyroAngY + GyroY * elapsedTime;
 //  gyroAngZ = gyroAngZ + GyroZ * elapsedTime;
-//  
+//
 //  Serial.print(" ");
 //  Serial.print(gyroAngX);
 //  Serial.print(" | ");
 //  Serial.print(abs(gyroAngY));
 //  Serial.print(" | ");
 //  Serial.println(gyroAngZ);
-//  // float newPos = 0 + prevPos; 
+//  // float newPos = 0 + prevPos;
 // }
 //
 // int minVal=265;
 //int maxVal=402;
-// 
+//
 //double x;
 //double y;
 //double z;
-// 
+//
 //void setup()
 //{
 //  Wire.begin();
@@ -346,7 +352,7 @@ ptr += "<p>TEMP. OVERLOAD<svg width="170" height="15"><rect x="15" y="5" rx="7" 
 //  int xAng = map(AcX,minVal,maxVal,-90,90);
 //  int yAng = map(AcY,minVal,maxVal,-90,90);
 //  int zAng = map(AcZ,minVal,maxVal,-90,90);
-// 
+//
 //  x = RAD_TO_DEG * (atan2(-yAng, -zAng) + PI);//Angular Conversion rad to deg
 //  y = RAD_TO_DEG * (atan2(-xAng, -zAng) + PI);
 //  z = RAD_TO_DEG * (atan2(-yAng, -xAng) + PI);
@@ -369,12 +375,12 @@ ptr += "<p>TEMP. OVERLOAD<svg width="170" height="15"><rect x="15" y="5" rx="7" 
 //#define ACCELEROMETER_SENSITIVITY 8192.0
 //#define GYROSCOPE_SENSITIVITY 65.536
 //#define M_PI 3.14159265359
-//#define dt 0.01             // 10 ms sample rate!    
-// 
+//#define dt 0.01             // 10 ms sample rate!
+//
 //void ComplementaryFilter(short accData[3], short gyrData[3], float *pitch, float *roll)
 //{
-//    float pitchAcc, rollAcc;               
-// 
+//    float pitchAcc, rollAcc;
+//
 //    // Integrate the gyroscope data -> int(angularSpeed) = angle
 //    *pitch += ((float)gyrData[0] / GYROSCOPE_SENSITIVITY) * dt; // Angle around the X-axis
 //    *roll -= ((float)gyrData[1] / GYROSCOPE_SENSITIVITY) * dt;    // Angle around the Y-axis
@@ -386,7 +392,7 @@ ptr += "<p>TEMP. OVERLOAD<svg width="170" height="15"><rect x="15" y="5" rx="7" 
 //  // Turning around the X axis results in a vector on the Y-axis
 //        pitchAcc = atan2f((float)accData[1], (float)accData[2]) * 180 / M_PI;
 //        *pitch = *pitch * 0.98 + pitchAcc * 0.02;
-// 
+//
 //  // Turning around the Y axis results in a vector on the X-axis
 //        rollAcc = atan2f((float)accData[0], (float)accData[2]) * 180 / M_PI;
 //        *roll = *roll * 0.98 + rollAcc * 0.02;
