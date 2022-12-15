@@ -20,11 +20,20 @@
 
 #include <WiFi.h>
 #include <WebServer.h>
-#include <Wire.h>     // Library for I2C comm
-#include <math.h>     // To include math functions
+#include <Wire.h>            // Library for I2C comm
+#include <math.h>            // To include math functions
+#include <Adafruit_GFX.h>    // Adafruit OLED graphics lib
+#include <Adafruit_SH110X.h> // Adafruit OLED lib
+
+#define i2c_Address 0x3c    // Initialize with the I2C address 0x3C 
+#define SCREEN_WIDTH 128    // Display Width Px
+#define SCREEN_HEIGHT 64    // Display Height Px
+#define OLED_RESET -1       // QT-PY / XIAO
+
+Adafruit_SH1106G display = Adafruit_SH1106G(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 /* SSID & Password*/
-const char* ssid = "Cunt";          // Enter SSID
+const char* ssid = "Advait's ESP";          // Enter SSID
 const char* password = "password";  //Enter Password
 
 /* IP Address details */
@@ -48,11 +57,16 @@ double t, tx, tf, pitch, roll;
 void setup() {
   pinMode(IMU1pin, OUTPUT);
   pinMode(IMU2pin, OUTPUT);
-  Wire.begin();                 //initiate wire library and I2C
-  Wire.beginTransmission(MPU);  //begin transmission to I2C slave device
-  Wire.write(0x6B);             // PWR_MGMT_1 register
-  Wire.write(0);                // set to zero (wakes up the MPU-6050)
-  Wire.endTransmission(true);   //ends transmission to I2C slave device
+  Wire.begin();                     // initiate wire library and I2C
+  Wire.beginTransmission(MPU);      // begin transmission to I2C slave device
+  Wire.write(0x6B);                 // PWR_MGMT_1 register
+  Wire.write(0);                    // set to zero (wakes up the MPU-6050)
+  Wire.endTransmission(true);       // ends transmission to I2C slave device
+  display.begin(i2c_Address, true); // Address 0x3C default
+  display.setContrast (5);          // dim display
+  display.cp437(true);
+  display.display();
+  display.clearDisplay();           // Clear the buffer.
   Serial.begin(115200);
 
   WiFi.softAP(ssid, password);
@@ -75,65 +89,55 @@ void loop() {
   Wire.endTransmission(false); //restarts transmission to I2C slave device
   Wire.requestFrom(MPU, 14, true); //request 14 registers in total
 
-  //Acceleration data correction
-  AcXcal = -950;
-  AcYcal = -300;
-  AcZcal = 0;
-
-  //Temperature correction
-  tcal = -1600;
-
-  //Gyro correction
-  GyXcal = 480;
+  GyXcal = 480; // Gyro Error
   GyYcal = 170;
   GyZcal = 210;
 
-  //read accelerometer data
+  AcXcal = -950; // Acceleration Error
+  AcYcal = -300;
+  AcZcal = 0;
+
+  tcal = -1600; // Temperature Error
+
+  //read register of accelerometer data
   AcX = Wire.read() << 8 | Wire.read(); // 0x3B (ACCEL_XOUT_H) 0x3C (ACCEL_XOUT_L)
   AcY = Wire.read() << 8 | Wire.read(); // 0x3D (ACCEL_YOUT_H) 0x3E (ACCEL_YOUT_L)
   AcZ = Wire.read() << 8 | Wire.read(); // 0x3F (ACCEL_ZOUT_H) 0x40 (ACCEL_ZOUT_L)
 
-  //read temperature data
+  //read register of temperature data
   Tmp = Wire.read() << 8 | Wire.read(); // 0x41 (TEMP_OUT_H) 0x42 (TEMP_OUT_L)
 
-  //read gyroscope data
+  //read register of gyroscope data
   GyX = Wire.read() << 8 | Wire.read(); // 0x43 (GYRO_XOUT_H) 0x44 (GYRO_XOUT_L)
   GyY = Wire.read() << 8 | Wire.read(); // 0x45 (GYRO_YOUT_H) 0x46 (GYRO_YOUT_L)
   GyZ = Wire.read() << 8 | Wire.read(); // 0x47 (GYRO_ZOUT_H) 0x48 (GYRO_ZOUT_L)
+  
+  tx = Tmp + tcal;         // Temperature Calculation
+  t = tx / 340 + 36.53;    // Temperature in degrees C (from datasheet)
+  //tf = (t * 9 / 5) + 32; // Celsius to Fahrenheit
 
-  //temperature calculation
-  tx = Tmp + tcal;
-  t = tx / 340 + 36.53; //equation for temperature in degrees C from datasheet
-  tf = (t * 9 / 5) + 32; //fahrenheit
+//  //conversion of accelerometer values into pitch and roll
+//  pitch = atan(AcX / sqrt((AcY * AcY) + (AcZ * AcZ))); //pitch calculation
+//  roll = atan(AcX / sqrt((AcX * AcX) + (AcZ * AcZ)));  //roll calculation
+//
+//  //converting radians into degrees
+//  pitch = pitch * (180.0 / 3.14);
+//  roll = roll * (180.0 / 3.14) ;
+//
+//  Serial.print("Pitch = "); Serial.print(pitch);
+//  Serial.print(" Roll = "); Serial.println(roll);
 
-  double x = Ax;
-  double y = Ay;
-  double z = Az;
+  Serial.print("MAXX "); Serial.print(AcX + AcXcal);
+  Serial.print(" MAXY "); Serial.print(AcY + AcYcal);
+  Serial.print(" MAXZ "); Serial.print(AcZ + AcZcal);
+  
+  Serial.print(" MAXT: "); Serial.println(t);
+  //Serial.print(" fahrenheit = "); Serial.println(tf);
 
-  pitch = atan(x / sqrt((y * y) + (z * z))); //pitch calculation
-  roll = atan(y / sqrt((x * x) + (z * z))); //roll calculation
-
-  //converting radians into degrees
-  pitch = pitch * (180.0 / 3.14);
-  roll = roll * (180.0 / 3.14) ;
-
-  //printing values to serial port
-  // Serial.print("Angle: ");
-  Serial.print("Pitch = "); Serial.print(pitch);
-  Serial.print(" Roll = "); Serial.println(roll);
-
-  Serial.print("Accelerometer: ");
-  Serial.print("X = "); Serial.print(AcX + AcXcal);
-  Serial.print(" Y = "); Serial.print(AcY + AcYcal);
-  Serial.print(" Z = "); Serial.println(AcZ + AcZcal);
-
-  /*Serial.print("Temperature in celsius = "); Serial.print(t);
-    Serial.print(" fahrenheit = "); Serial.println(tf);  */
-
-  Serial.print("Gyroscope: ");
-  Serial.print("X = "); Serial.print(GyX + GyXcal);
-  Serial.print(" Y = "); Serial.print(GyY + GyYcal);
-  Serial.print(" Z = "); Serial.println(GyZ + GyZcal);
+//  Serial.print("Gyroscope: ");
+//  Serial.print("X = "); Serial.print(GyX + GyXcal);
+//  Serial.print(" Y = "); Serial.print(GyY + GyYcal);
+//  Serial.print(" Z = "); Serial.println(GyZ + GyZcal);
 
   server.handleClient();
   if (IMU1status)
@@ -212,7 +216,7 @@ String SendHTML(uint8_t imu1stat, uint8_t imu2stat) {
   ptr += "</head>\n";
 
   ptr += "<body>\n";
-  ptr += "<h1>APOLLO COMMS</h1>\n";
+  ptr += "<h1>IMU COMM.</h1>\n";
   ptr += "<h3>DASHBOARD</h3>\n";
 
   if (t > 50) {
@@ -245,3 +249,126 @@ ptr += "<p>TEMP. OVERLOAD<svg width="170" height="15"><rect x="15" y="5" rx="7" 
   ptr += "</html>\n";
   return ptr;
 }
+
+
+
+//
+// int16_t GyroX, GyroY, GyroZ;
+// float previousTime, currentTime, elapsedTime;
+// float gyroAngX, gyroAngY, gyroAngZ;
+//
+// 
+// void setup()
+// {
+//  Wire.begin();                      
+//  Wire.beginTransmission(MPU);      
+//  Wire.write(0x6B);                  
+//  Wire.write(0);                  
+//  Wire.endTransmission(true);
+//  Serial.begin(115200);
+// }
+// 
+// void loop()
+// {
+// previousTime = currentTime;        //Previous time is stored before the actual time read
+// currentTime = millis();            //Current time 
+// elapsedTime = (currentTime-previousTime)/1000; //finding elapsed time and dividing by 1000 to get in seconds
+//  
+// Wire.beginTransmission(MPU);
+// Wire.write(0x43); //Gyro Measurement Register
+// Wire.endTransmission(false);
+// Wire.requestFrom(MPU, 6, true); //6+6+2 registers
+// 
+// GyroX = (Wire.read()<<8|Wire.read()) / 131.0; // For 250deg/s range divide raw value by 131.0
+// GyroY = (Wire.read()<<8|Wire.read()) / 131.0;
+// GyroZ = (Wire.read()<<8|Wire.read()) / 131.0;
+//  
+//  
+//  gyroAngX = gyroAngX + GyroX * elapsedTime; //Converting into degrees (deg=deg/s*s)
+//  gyroAngY = gyroAngY + GyroY * elapsedTime;
+//  gyroAngZ = gyroAngZ + GyroZ * elapsedTime;
+//  
+//  Serial.print(" ");
+//  Serial.print(gyroAngX);
+//  Serial.print(" | ");
+//  Serial.print(abs(gyroAngY));
+//  Serial.print(" | ");
+//  Serial.println(gyroAngZ);
+//  // float newPos = 0 + prevPos; 
+// }
+//
+// int minVal=265;
+//int maxVal=402;
+// 
+//double x;
+//double y;
+//double z;
+// 
+//void setup()
+//{
+//  Wire.begin();
+//  Wire.beginTransmission(MPU);
+//  Wire.write(0x6B); //configure power mode and clock mode
+//  Wire.write(0);
+//  Wire.endTransmission(true);
+//  Serial.begin(115200);
+//}
+//void loop()
+//{
+//  Wire.beginTransmission(MPU);
+//  Wire.write(0x3B); //Accelerometer Measurement Register
+//  Wire.endTransmission(false);
+//  Wire.requestFrom(MPU,14,true);
+//  AcX = Wire.read() << 8 | Wire.read();//8 bit shift
+//  AcY = Wire.read() << 8 | Wire.read();
+//  AcZ = Wire.read() << 8 | Wire.read();
+//
+//  int xAng = map(AcX,minVal,maxVal,-90,90);
+//  int yAng = map(AcY,minVal,maxVal,-90,90);
+//  int zAng = map(AcZ,minVal,maxVal,-90,90);
+// 
+//  x = RAD_TO_DEG * (atan2(-yAng, -zAng) + PI);//Angular Conversion rad to deg
+//  y = RAD_TO_DEG * (atan2(-xAng, -zAng) + PI);
+//  z = RAD_TO_DEG * (atan2(-yAng, -xAng) + PI);
+//
+//  Serial.print("Roll= ");Serial.print(x);
+//  Serial.print(" | Pitch= ");Serial.print(y);
+//  Serial.print(" | Yaw= ");Serial.println(z);
+//
+//  delay(100);
+//}
+//
+//
+//
+///*
+//  Fx = (0.96 * GyX) + (0.04 * AcX);
+//  Fy = (0.96 * GyY) + (0.04 * AcY);
+//  Fz = (0.96 * GyZ) + (0.04 * AcZ);
+//*/
+//
+//#define ACCELEROMETER_SENSITIVITY 8192.0
+//#define GYROSCOPE_SENSITIVITY 65.536
+//#define M_PI 3.14159265359
+//#define dt 0.01             // 10 ms sample rate!    
+// 
+//void ComplementaryFilter(short accData[3], short gyrData[3], float *pitch, float *roll)
+//{
+//    float pitchAcc, rollAcc;               
+// 
+//    // Integrate the gyroscope data -> int(angularSpeed) = angle
+//    *pitch += ((float)gyrData[0] / GYROSCOPE_SENSITIVITY) * dt; // Angle around the X-axis
+//    *roll -= ((float)gyrData[1] / GYROSCOPE_SENSITIVITY) * dt;    // Angle around the Y-axis
+//
+//    // Sensitivity = -2 to 2 G at 16Bit -> 2G = 32768 && 0.5G = 8192
+//    int forceMagnitudeApprox = abs(accData[0]) + abs(accData[1]) + abs(accData[2]);
+//    if (forceMagnitudeApprox > 8192 && forceMagnitudeApprox < 32768)
+//    {
+//  // Turning around the X axis results in a vector on the Y-axis
+//        pitchAcc = atan2f((float)accData[1], (float)accData[2]) * 180 / M_PI;
+//        *pitch = *pitch * 0.98 + pitchAcc * 0.02;
+// 
+//  // Turning around the Y axis results in a vector on the X-axis
+//        rollAcc = atan2f((float)accData[0], (float)accData[2]) * 180 / M_PI;
+//        *roll = *roll * 0.98 + rollAcc * 0.02;
+//    }
+//}
