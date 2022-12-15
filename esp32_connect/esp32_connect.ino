@@ -139,6 +139,26 @@ void loop() {
 //  Serial.print(" Y = "); Serial.print(GyY + GyYcal);
 //  Serial.print(" Z = "); Serial.println(GyZ + GyZcal);
 
+  // Print on OLED 
+  display.setTextSize(1);
+  display.setTextColor(SH110X_WHITE);
+  display.setCursor(80, 10);
+  display.print("MAXT ");
+  display.setCursor(100, 10);
+  display.print(t);
+  display.setCursor(0, 25);
+  display.print("MAXX ");
+  display.setCursor(32, 25);
+  display.print(AcX + AcXcal);
+  display.setCursor(0, 40);
+  display.print("MAXY ");
+  display.setCursor(40, 40);
+  display.print(AcY + AcYcal);
+  display.setCursor(0, 55);
+  display.print("MAXZ ");
+  display.setCursor(30, 55);
+  display.print(AcZ + AcZcal);
+
   server.handleClient();
   if (IMU1status)
   {
