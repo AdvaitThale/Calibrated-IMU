@@ -188,7 +188,7 @@ void handle_OnConnect() {
   IMU1status = LOW;
   IMU2status = LOW;
   Serial.println("GPIO18 Status: OFF | GPIO19 Status: OFF");
-  server.send(200, "text/html", SendHTML(IMU1status, IMU2status));
+  server.send(200, "text/html", SendHTML(IMU1status, IMU2status, AcX, AcY, AcZ));
 }
 
 void handle_imu1on() {
@@ -219,7 +219,7 @@ void handle_NotFound() {
   server.send(404, "text/plain", "Not found");
 }
 
-String SendHTML(uint8_t imu1stat, uint8_t imu2stat) {
+String SendHTML(uint8_t imu1stat, uint8_t imu2stat, uint8_t AcX, uint8_t AcY, uint8_t AcZ) {
   String ptr = "<!DOCTYPE html> <html>\n";
   ptr += "<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\">\n";
   ptr += "<meta content=\"Advait Thale\" name=\"author\"><meta content=\"20\" http-equiv=\"refresh\">\n";
@@ -242,8 +242,7 @@ String SendHTML(uint8_t imu1stat, uint8_t imu2stat) {
   ptr += "<body>\n";
   ptr += "<h1>IMU COMM.</h1>\n";
   ptr += "<h3>DASHBOARD</h3>\n";
-  client.println();
-  if (t > 20)
+  if (t > 25)
   {
     ptr += "<p>TEMP. OVERLOAD<svg width=\"170\" height=\"15\"><rect x=\"15\" y=\"5\" rx=\"7\" ry=\"7\" width=\"20\" height=\"10\" style=\"fill: #ff8800\"/></svg> </p>";
   }
@@ -254,7 +253,13 @@ String SendHTML(uint8_t imu1stat, uint8_t imu2stat) {
   ptr += "<div class=\"row\">\n";
   if (imu1stat)
   {
-    ptr += "<div class=\"column\"> <nobr><p>IMU-1:<div style=\"color:#009933\"> ONLINE</div></p><a class=\"button button-off\" href=\"/imu1off\">OFF</a></nobr><p id=\"box\">MAXX: </br>MAXY: </br>MAXZ: </p> </div>\n";
+    ptr += "<div class=\"column\"> <nobr><p>IMU-1:<div style=\"color:#009933\"> ONLINE</div></p><a class=\"button button-off\" href=\"/imu1off\">OFF</a></nobr><p id=\"box\">MAXX: "; 
+    ptr += (int)AcX; 
+    ptr += "</br>MAXY: ";
+    ptr += (int)AcY;
+    ptr += "</br>MAXZ: ";
+    ptr += (int)AcX;
+    ptr += "</p> </div>\n";
   }
   else
   {
@@ -262,7 +267,7 @@ String SendHTML(uint8_t imu1stat, uint8_t imu2stat) {
   }
   if (imu2stat)
   {
-    ptr += "<div class=\"column\"> <nobr><p>IMU-2:<div style=\"color:#009933\"> ONLINE</div></p><a class=\"button button-off\" href=\"/imu2off\">OFF</a></nobr><p id=\"box\">MAXX: </br>MAXY: </br>MAXZ: </p></div>\n";
+    ptr += "<div class=\"column\"> <nobr><p>IMU-2:<div style=\"color:#009933\"> ONLINE</div></p><a class=\"button button-off\" href=\"/imu2off\">OFF</a></nobr><p id=\"box\">MAXX: (int)AcX</br>MAXY: (int)AcY</br>MAXZ: (int)AcZ</p></div>\n";
   }
   else
   {
