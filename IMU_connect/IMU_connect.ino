@@ -62,7 +62,7 @@ void loop() {
   Wire.beginTransmission(0x68);      // begin transmission to I2C slave device
   Wire.write(0x3B);                 // starting with register 0x3B (ACCEL_XOUT_H) (Default: Degrees per Sec)
   Wire.endTransmission(false);      // restarts transmission to I2C slave device
-  Wire.requestFrom(0x68, 14, true);  // request 14 registers in total
+  Wire.requestFrom(0x68, 8, true);  // request 8 registers in total
   
   // Read register of Accelerometer data
   AcX = Wire.read() << 8 | Wire.read(); // 0x3B (ACCEL_XOUT_H) 0x3C (ACCEL_XOUT_L)
@@ -81,49 +81,6 @@ void loop() {
   Serial.print(" MAXT: "); Serial.println(t);
 }
 
-void getIMUData() {
- 
-}
-void calculate_error() {
-  // Read accelerometer values 1000 times
-  while (c < 1000) {
-    Wire.beginTransmission(MPU);
-    Wire.write(0x3B);
-    Wire.endTransmission(false);
-    Wire.requestFrom(MPU, 6, true);
-    AccX = (Wire.read() << 8 | Wire.read()) / 16384.0 ;
-    AccY = (Wire.read() << 8 | Wire.read()) / 16384.0 ;
-    AccZ = (Wire.read() << 8 | Wire.read()) / 16384.0 ;
-    // Sum all readings
-    AccErrorX = AccErrorX + ((atan((AccY) / sqrt( AccX * AccX + (AccZ * AccZ))) * 180 / PI)); // " sqrt(pow((AccX), 2) + pow((AccZ), 2)) " also works fine
-    AccErrorY = AccErrorY + ((atan(-1 * (AccX) / sqrt(AccY * AccY) + (AccZ * AccZ))) * 180 / PI));
-    c++;
-  }
-  
-  //Divide the sum by 200 to get the error value
-  AccErrorX = AccErrorX / 1000;
-  AccErrorY = AccErrorY / 1000;
-  c = 0;
-  // Read gyro values 200 times
-  while (c < 200) {
-    Wire.beginTransmission(MPU);
-    Wire.write(0x43);
-    Wire.endTransmission(false);
-    Wire.requestFrom(MPU, 6, true);
-    GyroX = Wire.read() << 8 | Wire.read();
-    GyroY = Wire.read() << 8 | Wire.read();
-    GyroZ = Wire.read() << 8 | Wire.read();
-    // Sum all readings
-    GyroErrorX = GyroErrorX + (GyroX / 131.0);
-    GyroErrorY = GyroErrorY + (GyroY / 131.0);
-    GyroErrorZ = GyroErrorZ + (GyroZ / 131.0);
-    c++;
-  }
-  //Divide the sum by 200 to get the error value
-  GyroErrorX = GyroErrorX / 200;
-  GyroErrorY = GyroErrorY / 200;
-  GyroErrorZ = GyroErrorZ / 200;
-  
 void handle_OnConnect() {
   loop();
   MAXX = AcX + AcXcal;

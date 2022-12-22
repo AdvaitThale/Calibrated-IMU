@@ -39,8 +39,6 @@ int tcal = -1600; // Temperature correction
 int minVal = 265; // Gyroscope correction
 int maxVal = 402;
 
-
-
 void setup()
 {
   Wire.begin();                // Initiate wire lib. and I2C
@@ -148,3 +146,49 @@ void loop()
 //    *roll = *roll * 0.98 + rollAcc * 0.02;
 //  }
 //}
+
+
+void calculate_error() {
+  //Get Accelerometer values 1000 times
+  while (c < 1000) {
+    Wire.beginTransmission(0x68);
+    Wire.write(0x3B);
+    Wire.endTransmission(false);
+    Wire.requestFrom(0x68, 6, true);
+    AccX = (Wire.read() << 8 | Wire.read()) / 16384.0 ;
+    AccY = (Wire.read() << 8 | Wire.read()) / 16384.0 ;
+    AccZ = (Wire.read() << 8 | Wire.read()) / 16384.0 ;
+    
+    // Add up
+    AccErrorX = AccErrorX + ((atan((AccY) / sqrt( AccX * AccX + (AccZ * AccZ))) * 180 / PI)); // " sqrt(pow((AccX), 2) + pow((AccZ), 2)) " also works fine
+    AccErrorY = AccErrorY + ((atan(-1 * (AccX) / sqrt(AccY * AccY) + (AccZ * AccZ))) * 180 / PI));
+    c++;
+  }
+  //Divide the sum by 1000 to get the error value
+  AccErrorX = AccErrorX / 1000;
+  AccErrorY = AccErrorY / 1000;
+  AccErrorZ = AccErrorZ / 1000;
+  
+  c = 0;
+  // Get Gyro values 1000 times
+  while (c < 1000) {
+    Wire.beginTransmission(0x68);
+    Wire.write(0x43);
+    Wire.endTransmission(false);
+    Wire.requestFrom(0x68, 6, true);
+    
+    GyroX = Wire.read() << 8 | Wire.read();
+    GyroY = Wire.read() << 8 | Wire.read();
+    GyroZ = Wire.read() << 8 | Wire.read();
+    
+    // Add up
+    GyroErrorX = GyroErrorX + (GyroX / 131.0);
+    GyroErrorY = GyroErrorY + (GyroY / 131.0);
+    GyroErrorZ = GyroErrorZ + (GyroZ / 131.0);
+    c++;
+  }
+  
+  // Divide the sum by 1000 to get error value
+  GyroErrorX = GyroErrorX / 1000;
+  GyroErrorY = GyroErrorY / 1000;
+  GyroErrorZ = GyroErrorZ / 1000;
