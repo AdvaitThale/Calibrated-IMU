@@ -27,8 +27,8 @@
 
 
 float MAXX, MAXY, MAXZ, MAXT; // Calibration variables
-int16_t AcX, AcY, AcZ, GyroX, GyroY, GyroZ, Tmp, AccX, AccY, AccZ;       // 16-bit ints
-double x, y, z, t, tx, tf, pitch, roll;
+int16_t AcX, AcY, AcZ, GyroX, GyroY, GyroZ, Tmp;       // 16-bit ints
+double x, y, z, t, tf, pitch, roll;
 float previousTime, currentTime, elapsedTime;
 float gyroAngX, gyroAngY, gyroAngZ;
 
@@ -53,19 +53,19 @@ void setup()
 
 void loop()
 {
-  previousTime = currentTime;        //Previous time is stored before the actual time read
-  currentTime = millis();            //Current time
-  elapsedTime = (currentTime - previousTime) / 1000; //finding elapsed time and dividing by 1000 to get in seconds
+  previousTime = currentTime;        // Previous time is stored before the actual time read
+  currentTime = millis();            // Current time
+  elapsedTime = (currentTime - previousTime) / 1000; // Dividing by 1000 to get Elapsed time in seconds
 
-  Wire.beginTransmission(0x68);      // Begin transmission to I2C slave device
+  Wire.beginTransmission(0x68);     // Begin transmission to I2C slave device
   Wire.write(0x3B);                 // Starting with register 0x3B (ACCEL_XOUT_H) (Default: Degrees per Sec)
-  Wire.endTransmission(false);      // restarts transmission to I2C slave device
+  Wire.endTransmission(false);      // Restarts transmission to I2C slave device
   Wire.requestFrom(0x68, 14, true); // IMU address, request 14 registers in total, true
 
   // Read registers of Accelerometer and divide raw values by 16384 for +-2g range
-  AccX = (Wire.read() << 8 | Wire.read()) / ACCELEROMETER_SENSITIVITY; // 0x3B (ACCEL_XOUT_H) 0x3C (ACCEL_XOUT_L)
-  AccY = (Wire.read() << 8 | Wire.read()) / ACCELEROMETER_SENSITIVITY; // 0x3D (ACCEL_YOUT_H) 0x3E (ACCEL_YOUT_L)
-  AccZ = (Wire.read() << 8 | Wire.read()) / ACCELEROMETER_SENSITIVITY; // 0x3F (ACCEL_ZOUT_H) 0x40 (ACCEL_ZOUT_L)
+  AcX = (Wire.read() << 8 | Wire.read()) / ACCELEROMETER_SENSITIVITY; // 0x3B (ACCEL_XOUT_H) 0x3C (ACCEL_XOUT_L)
+  AcY = (Wire.read() << 8 | Wire.read()) / ACCELEROMETER_SENSITIVITY; // 0x3D (ACCEL_YOUT_H) 0x3E (ACCEL_YOUT_L)
+  AcZ = (Wire.read() << 8 | Wire.read()) / ACCELEROMETER_SENSITIVITY; // 0x3F (ACCEL_ZOUT_H) 0x40 (ACCEL_ZOUT_L)
 
   // Read register of Temperature data
   Tmp = Wire.read() << 8 | Wire.read(); // 0x41 (TEMP_OUT_H) 0x42 (TEMP_OUT_L)
@@ -88,12 +88,12 @@ void loop()
   //  z = RAD_TO_DEG * (atan2(-yAng, -xAng) + PI);
 
   // Complementary Filter to add up Gyroscope values and Accelerometer
-    double Fx = (0.96 * GyX) + (0.04 * AcX);
-    double Fy = (0.96 * GyY) + (0.04 * AcY);
-    double Fz = (0.96 * GyZ) + (0.04 * AcZ);
+  double Fx = (0.96 * GyX) + (0.04 * AcX);
+  double Fy = (0.96 * GyY) + (0.04 * AcY);
+  double Fz = (0.96 * GyZ) + (0.04 * AcZ);
 
-  tx = Tmp + tcal;         // Temperature Calculation
-  t = tx / 340 + 36.53;    // Temperature in degrees C (from datasheet)
+  // Temperature Calculation
+  t = (Tmp + tcal) / 340 + 36.53;    // Temperature in degrees C (from datasheet)
   //tf = (t * 9 / 5) + 32; // Celsius to Fahrenheit
 
   //  Serial.print(" ");
@@ -126,14 +126,14 @@ void calculate_error() {
     AcZ = (Wire.read() << 8 | Wire.read()) / ACCELEROMETER_SENSITIVITY; // 0x3F (ACCEL_ZOUT_H) 0x40 (ACCEL_ZOUT_L)
 
     // Add up
-    AccErrorX = AccErrorX + ((atan((AcY) / sqrt( AcX * AcX + (AcZ * AcZ))) * 180 / M_PI)); // " sqrt(pow((AcX), 2) + pow((AcZ), 2)) " also works fine
-    AccErrorY = AccErrorY + ((atan(-1 * (AcX) / sqrt(AcY * AcY) + (AcZ * AcZ))) * 180 / M_PI));
+    AcErrorX = AcErrorX + ((atan((AcY) / sqrt( AcX * AcX + (AcZ * AcZ))) * 180 / M_PI)); // " sqrt(pow((AcX), 2) + pow((AcZ), 2)) " also works fine
+    AcErrorY = AcErrorY + ((atan(-1 * (AcX) / sqrt(AcY * AcY) + (AcZ * AcZ))) * 180 / M_PI));
     c++;
   }
   // Divide the sum by 1000 to get the error value
-  AccErrorX = AccErrorX / 1000;
-  AccErrorY = AccErrorY / 1000;
-  AccErrorZ = AccErrorZ / 1000;
+  AcErrorX = AcErrorX / 1000;
+  AcErrorY = AcErrorY / 1000;
+  AcErrorZ = AcErrorZ / 1000;
   c = 0;
 
   // Get Gyro values 1000 times
@@ -149,16 +149,16 @@ void calculate_error() {
     GyroZ = Wire.read() << 8 | Wire.read(); // 0x47 (GYRO_ZOUT_H) 0x48 (GYRO_ZOUT_L)
 
     // Add up
-    GyroErrorX = GyroErrorX + (GyroX / GYROSCOPE_SENSITIVITY);
-    GyroErrorY = GyroErrorY + (GyroY / GYROSCOPE_SENSITIVITY);
-    GyroErrorZ = GyroErrorZ + (GyroZ / GYROSCOPE_SENSITIVITY);
+    GyErrorX = GyErrorX + (GyroX / GYROSCOPE_SENSITIVITY);
+    GyErrorY = GyErrorY + (GyroY / GYROSCOPE_SENSITIVITY);
+    GyErrorZ = GyErrorZ + (GyroZ / GYROSCOPE_SENSITIVITY);
     c++;
   }
 
   // Divide the sum by 1000 to get error value
-  GyroErrorX = GyroErrorX / 1000;
-  GyroErrorY = GyroErrorY / 1000;
-  GyroErrorZ = GyroErrorZ / 1000;
+  GyErrorX = GyErrorX / 1000;
+  GyErrorY = GyErrorY / 1000;
+  GyErrorZ = GyErrorZ / 1000;
 
 }
 
