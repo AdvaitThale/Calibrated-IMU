@@ -13,7 +13,6 @@
 #include <Wire.h>
 #include <math.h> // Math. Functions
 
-const int MPU = 0x68;             // IMUs I2C address
 int16_t AcX, AcY, AcZ, Tmp;       // 16-bit Ints
 float MAXX, MAXY, MAXZ, MAXT; // Calibration variables
 double t, tx, tf;
@@ -36,7 +35,7 @@ WebServer server(80);
 
 void setup() {
   Wire.begin();                // Initiate wire lib. and I2C
-  Wire.beginTransmission(MPU); // Start transmission to I2C slave
+  Wire.beginTransmission(0x68); // Start transmission to I2C slave
   Wire.write(0x6B);            // Power Management Register (PWR_MGMT_1)
   Wire.write(0);               // Wake up IMU
   Wire.endTransmission(true);  // End transmission to I2C slave
@@ -60,17 +59,17 @@ void setup() {
 
 void loop() {
   server.handleClient();
-
-  Wire.beginTransmission(MPU);      // begin transmission to I2C slave device
+  Wire.beginTransmission(0x68);      // begin transmission to I2C slave device
   Wire.write(0x3B);                 // starting with register 0x3B (ACCEL_XOUT_H) (Default: Degrees per Sec)
   Wire.endTransmission(false);      // restarts transmission to I2C slave device
-  Wire.requestFrom(MPU, 14, true);  // request 14 registers in total
-   //read register of accelerometer data
+  Wire.requestFrom(0x68, 14, true);  // request 14 registers in total
+  
+  // Read register of Accelerometer data
   AcX = Wire.read() << 8 | Wire.read(); // 0x3B (ACCEL_XOUT_H) 0x3C (ACCEL_XOUT_L)
   AcY = Wire.read() << 8 | Wire.read(); // 0x3D (ACCEL_YOUT_H) 0x3E (ACCEL_YOUT_L)
   AcZ = Wire.read() << 8 | Wire.read(); // 0x3F (ACCEL_ZOUT_H) 0x40 (ACCEL_ZOUT_L)
 
-  //read register of temperature data
+  // Read register of Temperature data
   Tmp = Wire.read() << 8 | Wire.read(); // 0x41 (TEMP_OUT_H) 0x42 (TEMP_OUT_L)
 
   tx = Tmp + tcal;         // Temperature Calculation
@@ -100,6 +99,7 @@ void calculate_error() {
     AccErrorY = AccErrorY + ((atan(-1 * (AccX) / sqrt(AccY * AccY) + (AccZ * AccZ))) * 180 / PI));
     c++;
   }
+  
   //Divide the sum by 200 to get the error value
   AccErrorX = AccErrorX / 1000;
   AccErrorY = AccErrorY / 1000;
@@ -123,6 +123,7 @@ void calculate_error() {
   GyroErrorX = GyroErrorX / 200;
   GyroErrorY = GyroErrorY / 200;
   GyroErrorZ = GyroErrorZ / 200;
+  
 void handle_OnConnect() {
   loop();
   MAXX = AcX + AcXcal;
