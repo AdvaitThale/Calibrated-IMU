@@ -28,9 +28,11 @@
 
 float MAXX, MAXY, MAXZ, MAXT; // Calibration variables
 int16_t AcX, AcY, AcZ, GyroX, GyroY, GyroZ, Tmp;       // 16-bit ints
-double x, y, z, t, tf, pitch, roll;
+double x, y, z, tx, t, tf, pitch, roll;
 float previousTime, currentTime, elapsedTime;
 float gyroAngX, gyroAngY, gyroAngZ;
+float AcErrorX, AcErrorY, AcErrorZ;
+float GyErrorX, GyErrorY, GyErrorZ;
 
 // Calibration variables
 int AcXcal = -950; // Acceleration Error
@@ -43,12 +45,13 @@ int maxVal = 402;
 void setup()
 {
   Wire.begin();                // Initiate wire lib. and I2C
-  Wire.beginTransmission(MPU); // Start transmission to I2C slave
+  Wire.beginTransmission(0x68); // Start transmission to I2C slave
   Wire.write(0x6B);            // Power Management Register (PWR_MGMT_1)
   Wire.write(0);               // Wake up IMU
   Wire.endTransmission(true);  // End transmission to I2C slave
   Serial.begin(115200);        // Baud Rate
-  pinMode(BUZZER, OUTPUT)      // Set to OUTPUT for Buzzer Pin
+  pinMode(BUZZER, OUTPUT);     // Set to OUTPUT for Buzzer Pin
+  beep();
 }
 
 void loop()
@@ -88,12 +91,13 @@ void loop()
   //  z = RAD_TO_DEG * (atan2(-yAng, -xAng) + PI);
 
   // Complementary Filter to add up Gyroscope values and Accelerometer
-  double Fx = (0.96 * GyX) + (0.04 * AcX);
-  double Fy = (0.96 * GyY) + (0.04 * AcY);
-  double Fz = (0.96 * GyZ) + (0.04 * AcZ);
+  double Fx = (0.96 * GyroX) + (0.04 * AcX);
+  double Fy = (0.96 * GyroY) + (0.04 * AcY);
+  double Fz = (0.96 * GyroZ) + (0.04 * AcZ);
 
   // Temperature Calculation
-  t = (Tmp + tcal) / 340 + 36.53;    // Temperature in degrees C (from datasheet)
+  tx = Tmp + tcal;
+  t = (tx / 340) + 36.53;    // Temperature in degrees C (from datasheet)
   //tf = (t * 9 / 5) + 32; // Celsius to Fahrenheit
 
   //  Serial.print(" ");
@@ -102,17 +106,22 @@ void loop()
   //  Serial.print(abs(gyroAngY));
   //  Serial.print(" | ");
   //  Serial.println(gyroAngZ);
-  //  // float newPos = 0 + prevPos;
 
-  Serial.print("MAXX "); Serial.print(AcX + AcXcal);
-  Serial.print(" MAXY "); Serial.print(AcY + AcYcal);
-  Serial.print(" MAXZ "); Serial.print(AcZ + AcZcal);
+  Serial.print("MAXX "); Serial.print(Fx);
+  Serial.print(" MAXY "); Serial.print(Fy);
+  Serial.print(" MAXZ "); Serial.print(Fz);
   Serial.print(" MAXT: "); Serial.println(t);
-  //Serial.print(" fahrenheit = "); Serial.println(tf);
 
+  //  Serial.print("MAXX "); Serial.print(AcX + AcXcal);
+  //  Serial.print(" MAXY "); Serial.print(AcY + AcYcal);
+  //  Serial.print(" MAXZ "); Serial.print(AcZ + AcZcal);
+  //  Serial.print(" MAXT: "); Serial.println(t);
+  //Serial.print(" fahrenheit = "); Serial.println(tf);
+  
 }
 
 void calculate_error() {
+  int c = 0;
   // Get Accelerometer values 1000 times
   while (c < 1000) {
     Wire.beginTransmission(0x68);
@@ -126,8 +135,8 @@ void calculate_error() {
     AcZ = (Wire.read() << 8 | Wire.read()) / ACCELEROMETER_SENSITIVITY; // 0x3F (ACCEL_ZOUT_H) 0x40 (ACCEL_ZOUT_L)
 
     // Add up
-    AcErrorX = AcErrorX + ((atan((AcY) / sqrt( AcX * AcX + (AcZ * AcZ))) * 180 / M_PI)); // " sqrt(pow((AcX), 2) + pow((AcZ), 2)) " also works fine
-    AcErrorY = AcErrorY + ((atan(-1 * (AcX) / sqrt(AcY * AcY) + (AcZ * AcZ))) * 180 / M_PI));
+    AcErrorX = AcErrorX + ((atan((AcY) / sqrt((AcX * AcX) + (AcZ * AcZ))) * 180 / M_PI)); // "sqrt(pow((AcX), 2) + pow((AcZ), 2))" also works fine
+    AcErrorY = AcErrorY + ((atan(-1 * (AcX) / sqrt((AcY * AcY) + (AcZ * AcZ))) * 180 / M_PI));
     c++;
   }
   // Divide the sum by 1000 to get the error value
