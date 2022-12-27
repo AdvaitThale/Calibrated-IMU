@@ -182,17 +182,58 @@ void calculate_error() {
 }
 
 void beep() {
-  digitalWrite(BUZZER, HIGH);
-  delay(85);
-  digitalWrite(BUZZER, LOW);
-  delay(85);
-  digitalWrite(BUZZER, HIGH);
-  delay(150);
-  digitalWrite(BUZZER, LOW);
-  delay(90);
-  digitalWrite(BUZZER, HIGH);
-  delay(90);
-  digitalWrite(BUZZER, LOW);
+
+    tone(BUZZER,261);    
+    delay(85);
+    noTone(BUZZER); 
+    
+    tone(BUZZER,293);             
+    delay(200);    
+    noTone(BUZZER); 
+    
+    tone(BUZZER,329);      
+    delay(200);
+    noTone(BUZZER);     
+    
+    tone(BUZZER,349);    
+    delay(200);    
+    noTone(BUZZER); 
+
+    tone(BUZZER,392);            
+    delay(200);
+    noTone(BUZZER); 
+
+//    tone(BUZZER,261);    
+//    delay(200);
+//    noTone(BUZZER); 
+//    
+//    tone(BUZZER,293);             
+//    delay(200);    
+//    noTone(BUZZER); 
+//    
+//    tone(BUZZER,329);      
+//    delay(200);
+//    noTone(BUZZER);     
+//    
+//    tone(BUZZER,349);    
+//    delay(200);    
+//    noTone(BUZZER); 
+//
+//    tone(BUZZER,392);            
+//    delay(200);
+//    noTone(BUZZER); 
+  
+//  digitalWrite(BUZZER, HIGH);
+//  delay(85);
+//  digitalWrite(BUZZER, LOW);
+//  delay(85);
+//  digitalWrite(BUZZER, HIGH);
+//  delay(150);
+//  digitalWrite(BUZZER, LOW);
+//  delay(90);
+//  digitalWrite(BUZZER, HIGH);
+//  delay(90);
+//  digitalWrite(BUZZER, LOW);
 }
 
 //  //conversion of accelerometer values into pitch and roll
