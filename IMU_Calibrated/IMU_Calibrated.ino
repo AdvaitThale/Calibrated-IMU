@@ -104,11 +104,11 @@ void loop()
   GyroX = GyroX + 0.56; // GyroErrorX ~(-0.56)
   GyroY = GyroY - 2; // GyroErrorY ~(2)
   GyroZ = GyroZ + 0.79; // GyroErrorZ ~ (-0.8)
-  
+
   // Currently the raw values are in degrees per seconds, deg/s, so we need to multiply by sendonds (s) to get the angle in degrees
-//  gyroAngleX = gyroAngleX + GyroX * elapsedTime; // deg/s * s = deg
-//  gyroAngleY = gyroAngleY + GyroY * elapsedTime;
-//  yaw =  yaw + GyroZ * elapsedTime;
+  //  gyroAngleX = gyroAngleX + GyroX * elapsedTime; // deg/s * s = deg
+  //  gyroAngleY = gyroAngleY + GyroY * elapsedTime;
+  //  yaw =  yaw + GyroZ * elapsedTime;
 
   //  Serial.print(" ");
   //  Serial.print(gyroAngX);
@@ -127,7 +127,7 @@ void loop()
   //  Serial.print(" MAXZ "); Serial.print(AcZ + AcZcal);
   //  Serial.print(" MAXT: "); Serial.println(t);
   //Serial.print(" fahrenheit = "); Serial.println(tf);
-  
+
 }
 
 void calculate_error() {
@@ -182,58 +182,43 @@ void calculate_error() {
 }
 
 void beep() {
+  Serial.println("Starting DIGI-SENSE...");
+  digitalWrite(BUZZER, HIGH);
+  delay(85);
+  digitalWrite(BUZZER, LOW);
+  tone(BUZZER, 2093);
+  delay(200);
+  noTone(BUZZER);
+  digitalWrite(BUZZER, HIGH);
+  delay(100);
+  digitalWrite(BUZZER, LOW);
 
-    tone(BUZZER,261);    
-    delay(85);
-    noTone(BUZZER); 
-    
-    tone(BUZZER,293);             
-    delay(200);    
-    noTone(BUZZER); 
-    
-    tone(BUZZER,329);      
-    delay(200);
-    noTone(BUZZER);     
-    
-    tone(BUZZER,349);    
-    delay(200);    
-    noTone(BUZZER); 
 
-    tone(BUZZER,392);            
-    delay(200);
-    noTone(BUZZER); 
+  //  digitalWrite(BUZZER, HIGH);
+  //  delay(150);
+  //  digitalWrite(BUZZER, LOW);
 
-//    tone(BUZZER,261);    
-//    delay(200);
-//    noTone(BUZZER); 
-//    
-//    tone(BUZZER,293);             
-//    delay(200);    
-//    noTone(BUZZER); 
-//    
-//    tone(BUZZER,329);      
-//    delay(200);
-//    noTone(BUZZER);     
-//    
-//    tone(BUZZER,349);    
-//    delay(200);    
-//    noTone(BUZZER); 
-//
-//    tone(BUZZER,392);            
-//    delay(200);
-//    noTone(BUZZER); 
-  
-//  digitalWrite(BUZZER, HIGH);
-//  delay(85);
-//  digitalWrite(BUZZER, LOW);
-//  delay(85);
-//  digitalWrite(BUZZER, HIGH);
-//  delay(150);
-//  digitalWrite(BUZZER, LOW);
-//  delay(90);
-//  digitalWrite(BUZZER, HIGH);
-//  delay(90);
-//  digitalWrite(BUZZER, LOW);
+  //    tone(BUZZER,261);
+  //    delay(200);
+  //    noTone(BUZZER);
+  //
+  //    tone(BUZZER,293);
+  //    delay(200);
+  //    noTone(BUZZER);
+  //
+  //    tone(BUZZER,329);
+  //    delay(200);
+  //    noTone(BUZZER);
+  //
+  //    tone(BUZZER,349);
+  //    delay(200);
+  //    noTone(BUZZER);
+  //
+  //    tone(BUZZER,392);
+  //    delay(200);
+  //    noTone(BUZZER);
+
+
 }
 
 //  //conversion of accelerometer values into pitch and roll
