@@ -93,7 +93,31 @@ void handle_OnConnect() {
 void handle_NotFound() {
   server.send(404, "text/plain", "Oops, Page Not Found!!");
 }
+void beep(){
+    //  digitalWrite(BUZZER, HIGH);
+  //  delay(150);
+  //  digitalWrite(BUZZER, LOW);
 
+  //    tone(BUZZER,261);
+  //    delay(200);
+  //    noTone(BUZZER);
+  //
+  //    tone(BUZZER,293);
+  //    delay(200);
+  //    noTone(BUZZER);
+  //
+  //    tone(BUZZER,329);
+  //    delay(200);
+  //    noTone(BUZZER);
+  //
+  //    tone(BUZZER,349);
+  //    delay(200);
+  //    noTone(BUZZER);
+  //
+  //    tone(BUZZER,392);
+  //    delay(200);
+  //    noTone(BUZZER);
+}
 String SendHTML(float MAXX, float MAXY, float MAXZ, float MAXT) {
   String ptr = "<!DOCTYPE html> <html>\n";
   ptr += "<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\">\n";
