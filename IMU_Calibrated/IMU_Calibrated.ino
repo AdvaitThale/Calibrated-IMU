@@ -100,6 +100,16 @@ void loop()
   t = (tx / 340) + 36.53;    // Temperature in degrees C (from datasheet)
   //tf = (t * 9 / 5) + 32; // Celsius to Fahrenheit
 
+  // Correct the outputs with the calculated error values
+  GyroX = GyroX + 0.56; // GyroErrorX ~(-0.56)
+  GyroY = GyroY - 2; // GyroErrorY ~(2)
+  GyroZ = GyroZ + 0.79; // GyroErrorZ ~ (-0.8)
+  
+  // Currently the raw values are in degrees per seconds, deg/s, so we need to multiply by sendonds (s) to get the angle in degrees
+//  gyroAngleX = gyroAngleX + GyroX * elapsedTime; // deg/s * s = deg
+//  gyroAngleY = gyroAngleY + GyroY * elapsedTime;
+//  yaw =  yaw + GyroZ * elapsedTime;
+
   //  Serial.print(" ");
   //  Serial.print(gyroAngX);
   //  Serial.print(" | ");
@@ -173,7 +183,15 @@ void calculate_error() {
 
 void beep() {
   digitalWrite(BUZZER, HIGH);
-  delay(100);
+  delay(85);
+  digitalWrite(BUZZER, LOW);
+  delay(85);
+  digitalWrite(BUZZER, HIGH);
+  delay(150);
+  digitalWrite(BUZZER, LOW);
+  delay(90);
+  digitalWrite(BUZZER, HIGH);
+  delay(90);
   digitalWrite(BUZZER, LOW);
 }
 
