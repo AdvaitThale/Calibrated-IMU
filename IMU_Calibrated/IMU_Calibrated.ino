@@ -44,13 +44,13 @@ int maxVal = 402;
 
 void setup()
 {
+  Serial.begin(115200);        // Baud Rate
+  pinMode(BUZZER, OUTPUT);     // Set to OUTPUT for Buzzer Pin
   Wire.begin();                // Initiate wire lib. and I2C
   Wire.beginTransmission(0x68); // Start transmission to I2C slave
   Wire.write(0x6B);            // Power Management Register (PWR_MGMT_1)
   Wire.write(0);               // Wake up IMU
   Wire.endTransmission(true);  // End transmission to I2C slave
-  Serial.begin(115200);        // Baud Rate
-  pinMode(BUZZER, OUTPUT);     // Set to OUTPUT for Buzzer Pin
   beep();
 }
 

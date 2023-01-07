@@ -64,7 +64,7 @@ void loop()
     Tmp=Wire.read()<<8|Wire.read(); // 0x41 (TEMP_OUT_H) 0x42 (TEMP_OUT_L) 
   
     //read gyroscope data
-    GyX=Wire.read(67)<<8|Wire.read(68); // 0x43 (GYRO_XOUT_H) 0x44 (GYRO_XOUT_L)
+    GyX=Wire.read()<<8|Wire.read(); // 0x43 (GYRO_XOUT_H) 0x44 (GYRO_XOUT_L)
     GyY=Wire.read()<<8|Wire.read(); // 0x45 (GYRO_YOUT_H) 0x46 (GYRO_YOUT_L)
     GyZ=Wire.read()<<8|Wire.read(); // 0x47 (GYRO_ZOUT_H) 0x48 (GYRO_ZOUT_L) 
 
@@ -82,17 +82,17 @@ void loop()
 //    Serial.print(" Roll = "); Serial.println(roll);
 //  
 //    Serial.print("Accelerometer: ");
-//    Serial.print("X = "); Serial.print(AcX + AcXcal);
-//    Serial.print(" Y = "); Serial.print(AcY + AcYcal);
-//    Serial.print(" Z = "); Serial.println(AcZ + AcZcal); 
+    Serial.print("X = "); Serial.print(AcX + AcXcal);
+    Serial.print(" Y = "); Serial.print(AcY + AcYcal);
+    Serial.print(" Z = "); Serial.println(AcZ + AcZcal); 
 
     /*Serial.print("Temperature in celsius = "); Serial.print(t);  
     Serial.print(" fahrenheit = "); Serial.println(tf);  */
   
 //    Serial.print("Gyroscope: ");
-    Serial.print("X = "); Serial.print(GyX + GyXcal);
-    Serial.print(" Y = "); Serial.print(GyY + GyYcal);
-    Serial.print(" Z = "); Serial.println(GyZ + GyZcal);
+//    Serial.print("X = "); Serial.print(GyX + GyXcal);
+//    Serial.print(" Y = "); Serial.print(GyY + GyYcal);
+//    Serial.print(" Z = "); Serial.println(GyZ + GyZcal);
   
     delay(100);
 }
