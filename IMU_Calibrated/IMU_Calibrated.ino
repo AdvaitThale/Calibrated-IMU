@@ -192,6 +192,8 @@ void beep() {
   digitalWrite(BUZZER, HIGH);
   delay(100);
   digitalWrite(BUZZER, LOW);
+
+//   tone(BUZZER, 8003);
 }
 
 //  //conversion of accelerometer values into pitch and roll
