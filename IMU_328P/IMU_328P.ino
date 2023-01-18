@@ -39,14 +39,14 @@ void setup()
 #include <Wire.h> // For comm. with I2C devices
 #include <math.h> // Math. Functions
 
-#define ACCELEROMETER_SENSITIVITY 16384.0 // +-2g = 16384 LSB/g
-#define GYROSCOPE_SENSITIVITY 131.0       // 250 degrees/s = 131 LSB/degrees/s
-#define M_PI 3.14159265359                // Redefine PI
-#define dt 0.01                           // 10 ms Sample rate
-#define BUZZER 11                         // BUZZER Pin
+#define ACCELEROMETER_SENSITIVITY 16384.0              // +-2g = 16384 LSB/g
+#define GYROSCOPE_SENSITIVITY 131.0                    // 250 degrees/s = 131 LSB/degrees/s
+#define M_PI 3.14159265359                             // Redefine PI
+#define dt 0.01                                        // 10 ms Sample rate
+#define BUZZER 11                                      // BUZZER Pin
 
 
-float BYTX, BYTY, BYTZ, BYTT; // Calibration variables
+float BYTX, BYTY, BYTZ, BYTT;                          // Calibration variables
 int16_t AcX, AcY, AcZ, GyroX, GyroY, GyroZ, Tmp;       // 16-bit ints
 double x, y, z, tx, t, tf, pitch, roll;
 float previousTime, currentTime, elapsedTime;
@@ -55,22 +55,22 @@ float AcErrorX, AcErrorY, AcErrorZ;
 float GyErrorX, GyErrorY, GyErrorZ;
 
 // Calibration variables
-int AcXcal = -950; // Acceleration Error
+int AcXcal = -950;                                    // Acceleration Error
 int AcYcal = -300;
 int AcZcal = 0;
-int tcal = -1600; // Temperature correction
-int minVal = 265; // Gyroscope correction
+int tcal = -1600;                                     // Temperature correction
+int minVal = 265;                                     // Gyroscope correction
 int maxVal = 402;
 
 void setup()
 {
-  Serial.begin(115200);        // Baud Rate
-  pinMode(BUZZER, OUTPUT);     // Set to OUTPUT for Buzzer Pin
-  Wire.begin();                // Initiate wire lib. and I2C
-  Wire.beginTransmission(0x68); // Start transmission to I2C slave
-  Wire.write(0x6B);            // Power Management Register (PWR_MGMT_1)
-  Wire.write(0);               // Wake up IMU
-  Wire.endTransmission(true);  // End transmission to I2C slave
+  Serial.begin(115200);                               // Baud Rate
+  pinMode(BUZZER, OUTPUT);                            // Set to OUTPUT for Buzzer Pin
+  Wire.begin();                                       // Initiate wire lib. and I2C
+  Wire.beginTransmission(0x68);                       // Start transmission to I2C slave
+  Wire.write(0x6B);                                   // Power Management Register (PWR_MGMT_1)
+  Wire.write(0);                                      // Wake up IMU
+  Wire.endTransmission(true);                         // End transmission to I2C slave
   beep();
 }
 
