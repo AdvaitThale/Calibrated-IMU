@@ -4,12 +4,12 @@
   *******************************************************************
                            IMU PORT-328
   *******************************************************************
-     
+
   This test code is an overview of how IMU is calibrated on the port of ATMega328P.
   As IMU, MPU6050 is used which is 6 axis Accelerometer, Gyroscope & Temprature
   sensor. Here, IMUs acceleroeter is used for checking direction of vibrations.
-  The calibrated data can be viewed on LCD or by connecting 328's serial directly 
-  to PCs com port or via RS232 DB9 port preimplemented in the code. 
+  The calibrated data can be viewed on LCD or by connecting 328's serial directly
+  to PCs com port or via RS232 DB9 port preimplemented in the code.
   Refer Register Map and datasheet for furthur details on MPU6050 IMU.
 
   Pinout of IMU MPU6050:
@@ -204,7 +204,10 @@ void beep() {
   digitalWrite(BUZZER, HIGH);
   delay(85);
   digitalWrite(BUZZER, LOW);
-  tone(BUZZER, 2093);
+  tone(BUZZER, 14383);
+  delay(200);
+  noTone(BUZZER);
+  tone(BUZZER, 4093);
   delay(200);
   noTone(BUZZER);
   digitalWrite(BUZZER, HIGH);
