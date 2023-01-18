@@ -1,50 +1,38 @@
-#include <SoftwareSerial.h>
-
-SoftwareSerial Serial1(2, 3); // Rx, Tx
-/*Connect in invert manner to RS232 breakout board Rx-> Tx | Tx-> Rx*/
-
-void setup()
-{
-  Serial.begin(9600);           // Open USB serial communications
-  Serial.println("USB Serial");
-  Serial1.begin(9600);         // set the data rate for the SoftwareSerial port
-}
-
-
-
-
-
-
-
-
-
 /*
   Author: Advait Thale
 
   *******************************************************************
-                           IMU Vibration
+                           IMU PORT-328
   *******************************************************************
-
-  Ths is a test code for determining vibration using IMU. As IMU
-  MPU6050 is used which is 6 axis Accelerometer, Gyroscope & Temprature
+     
+  This test code is an overview of how IMU is calibrated on the port of ATMega328P.
+  As IMU, MPU6050 is used which is 6 axis Accelerometer, Gyroscope & Temprature
   sensor. Here, IMUs acceleroeter is used for checking direction of vibrations.
+  The calibrated data can be viewed on LCD or by connecting 328's serial directly 
+  to PCs com port or via RS232 DB9 port preimplemented in the code. 
   Refer Register Map and datasheet for furthur details on MPU6050 IMU.
 
   Pinout of IMU MPU6050:
   ---------------------------------
   |VCC|GND|SCL|SDA|XDA|XCL|AD0|INT|
   ---------------------------------
+
+  Pinout of RS232 to TTL:
+  ---------------
+  |VCC|RX|TX|GND|
+  ---------------
+
 */
 
-#include <Wire.h> // For comm. with I2C devices
-#include <math.h> // Math. Functions
+#include <math.h>                                      // Math. Functions
+#include <Wire.h>                                      // For comm. with I2C devices
+#include <SoftwareSerial.h>
 
 #define ACCELEROMETER_SENSITIVITY 16384.0              // +-2g = 16384 LSB/g
 #define GYROSCOPE_SENSITIVITY 131.0                    // 250 degrees/s = 131 LSB/degrees/s
 #define M_PI 3.14159265359                             // Redefine PI
 #define dt 0.01                                        // 10 ms Sample rate
 #define BUZZER 11                                      // BUZZER Pin
-
 
 float BYTX, BYTY, BYTZ, BYTT;                          // Calibration variables
 int16_t AcX, AcY, AcZ, GyroX, GyroY, GyroZ, Tmp;       // 16-bit ints
@@ -62,9 +50,14 @@ int tcal = -1600;                                     // Temperature correction
 int minVal = 265;                                     // Gyroscope correction
 int maxVal = 402;
 
+SoftwareSerial Serial1(2, 3); // Rx, Tx
+/*Connect in invert manner to RS232 breakout board Rx-> Tx | Tx-> Rx*/
+
 void setup()
 {
   Serial.begin(115200);                               // Baud Rate
+  Serial.println("USB Serial");
+  Serial1.begin(115200);                              // Data rate for RS232
   pinMode(BUZZER, OUTPUT);                            // Set to OUTPUT for Buzzer Pin
   Wire.begin();                                       // Initiate wire lib. and I2C
   Wire.beginTransmission(0x68);                       // Start transmission to I2C slave
@@ -117,7 +110,7 @@ void loop()
 
   // Temperature Calculation
   tx = Tmp + tcal;
-  t = (tx / 340) + 36.53;    // Temperature in degrees C (from datasheet)
+  BYTT = (tx / 340) + 36.53;    // Temperature in degrees C (from datasheet)
   //tf = (t * 9 / 5) + 32; // Celsius to Fahrenheit
 
   // Correct the outputs with the calculated error values
@@ -207,7 +200,7 @@ void calculate_error() {
 }
 
 void beep() {
-  Serial.println("Starting DIGI-SENSE...");
+  Serial.println("INITIALIZING ...");
   digitalWrite(BUZZER, HIGH);
   delay(85);
   digitalWrite(BUZZER, LOW);
