@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Advait Thale" name="author">
+    <meta content="20" http-equiv="refresh">
+    <title>BYTE IMUs</title>
+    <link href="C:\Users\advai\OneDrive\Documents\GitHub\Digitech-Eng.-Automation-Project\Web Server\Eagle\data\digi-logo.png"
+          rel="icon" type="image/x-icon"/>
+    <style>
+     * {
+        box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+        }
+
+        #para
+        {
+            width: 50%;
+            padding: 10px;
+            border: 1px solid black;
+            background-color: #00004d; /*azure*/
+            font-family: cursive;
+        }
+
+        .column {
+            float: left;
+            width: 50%;
+            padding: 10px;
+            display:inline-block;
+        }
+
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        .button {
+            border-radius: 25px;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            font-family: sans-serif;
+            text-decoration: none;
+            border-radius: 25px;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: 0.3s;
+
+        }
+        .button:hover {opacity: 1; font-family: sans-serif}
+        .button1 {background-color: #46a049;} /* #4CAF50 */
+        .button2 {background-color: #cc6600;} /* #e67300 */
+        .button3 {background-color: #990000;} /* #cc0000 */
+        .button4 {background-color: #304c82;} /* #4267B2 */
+
+        footer {
+            text-align: right;
+            text-decoration: none;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            height: 5%;
+            padding: 3px;
+            background-color: blanchedalmond; /*#b3b3b3*/
+            color: black;
+        }
+
+        .sbtn {
+            border-radius: 40px;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            font-family: sans-serif;
+            text-decoration: none;
+            border-radius: 25px;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: 0.3s;
+
+        }
+        .sbtn:hover {opacity: 1; font-family: sans-serif}
+        .sbtn1 {background-color: #46a049;} /* #4CAF50 */
+        .sbtn2 {background-color: #cc6600;} /* #e67300 */
+        .sbtn3 {background-color: #990000;} /* #cc0000 */
+        .sbtn4 {background-color: #304c82;} /* #4267B2 */
+    </style>
+</head>
+<body bgcolor="#ffffff">
+<div class="row">
+    <div class="column">
+        <svg height="180" width="1000">
+            <rect height="150" rx="15" ry="15" style="fill:#ff0000;opacity:0.9" width="900" x="50" y="20"/>
+
+        </svg>
+    </div>
+    <div class="column">
+        <button class="button button2" name="config">Config</button>
+        <br>
+        <button class="button button1" name="graph">Graph</button>
+    </div>
+</div>
+</body>
+
+<footer>
+    ©2023 | INERTIAL MEASUREMENT UNIT DASHBOARD -> @Author: <a href="https://github.com/AdvaitThale"> Advait Thale</a><br>
+</footer>
+</html>
+
+
+ <!DOCTYPE html> <html>
+   <head><meta name=\viewport\ content=\width=device-width, initial-scale=1.0, user-scalable=no\>
+   <meta content=\Advait Thale\ name=\author\><meta content=\1\ http-equiv=\refresh\>
+   <title>IMU Dashboard</title>
+   <style>html { font-family: Helvetica; display: inline-block; margin: 0px auto; text-align: center;}
+   body{margin-top: 50px;} h1 {color: #444444;margin: 50px auto 30px;}
+   p {font-size: 24px;color: #444444;margin-bottom: 10px;}
+   footer {text-align: center;text-decoration: none;position: fixed;left: 0;bottom: 0;width: 100%;height: 3%;padding: 2px;background-color: #00004d;color: #f2f2f2;};\
+   </style>
+   </head>
+
+   <body>
+   <div id=\webpage\>
+   <h1>IMU Monitor</h1>
+   if (t >= 50) {
+     <p>TEMP. OVERLOAD<svg width=\170\ height=\15\><rect x=\15\ y=\5\ rx=\7\ ry=\7\ width=\20\ height=\10\ style=\fill: #e60000\/></svg> </p>
+  }
+  else if(t > 25 && t < 50) {
+     <p>TEMP. OVERLOAD<svg width=\170\ height=\15\><rect x=\15\ y=\5\ rx=\7\ ry=\7\ width=\20\ height=\10\ style=\fill: #ff8800\/></svg> </p>
+  }
+  else {
+     <p>TEMP. OVERLOAD<svg width=\170\ height=\15\><rect x=\15\ y=\5\ rx=\7\ ry=\7\ width=\20\ height=\10\ style=\fill: #009933\/></svg> </p>
+  }
+
+   <p> MAXX:
+   (float)MAXX
+   </p>
+   <p> MAXY:
+   (float)MAXY
+   </p>
+   <p> MAXZ:
+   (float)MAXZ
+   </p>
+   <p> MAXT:
+   (float)MAXT
+   </p>
+   </div>
+   
+   </body>
+   </html>
