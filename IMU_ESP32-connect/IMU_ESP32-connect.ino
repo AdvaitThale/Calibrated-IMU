@@ -219,7 +219,7 @@ void handle_NotFound() {
   server.send(404, "text/plain", "Not found");
 }
 
-String SendHTML(uint8_t imu1stat, uint8_t imu2stat, uint8_t AcX, uint8_t AcY, uint8_t AcZ) {
+String SendHTML(uint8_t imu1stat, uint8_t imu2stat) {
   String ptr = "<!DOCTYPE html> <html>\n";
   ptr += "<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\">\n";
   ptr += "<meta content=\"Advait Thale\" name=\"author\"><meta content=\"20\" http-equiv=\"refresh\">\n";
