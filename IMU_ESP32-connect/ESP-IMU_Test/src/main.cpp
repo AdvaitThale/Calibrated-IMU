@@ -20,7 +20,7 @@
 #include <Wire.h> // For comm. with I2C devices
 #include <math.h> // Math. Functions
 
-#define ACCELEROMETER_SENSITIVITY 8192.0 // +-2g = 16384 LSB/g
+#define ACCELEROMETER_SENSITIVITY 8192.0 a
 #define GYROSCOPE_SENSITIVITY 131.0       // 250 degrees/s = 131 LSB/degrees/s
 #define M_PI 3.14159265359                // Redefine PI
 #define BUZZER 11                         // BUZZER Pin
