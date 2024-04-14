@@ -1,0 +1,25 @@
+{
+	"folders": [
+		{
+			"name": "MPPT_PORT_Xtensa",
+			"path": "../../../Solar-MPPT/MPPT_PORT_Xtensa"
+		},
+		{
+			"path": "../../../../../Desktop/pioMPPT/MPPT"
+		},
+		{
+			"name": "Radio Receiver",
+			"path": "../../Radio Receiver"
+		},
+		{
+			"name": "IMU_OLED-Calibration",
+			"path": ".."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"*.tcc": "cpp",
+			"fstream": "cpp"
+		}
+	}
+}
